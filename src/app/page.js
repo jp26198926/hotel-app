@@ -27,12 +27,15 @@ import { Button } from "@/components/ui";
 import DatePicker from "@/components/DatePicker";
 import TangMowLogo from "@/components/TangMowLogo";
 import { useToast } from "@/components/Toast";
+import { useAdminSettings } from "@/context/AdminSettingsContext";
 
 export default function HomePage() {
   const router = useRouter();
   const { showError, showSuccess, ToastComponent } = useToast();
-  // Hero background images array
-  const heroImages = [
+  const { appSettings, heroSettings, isLoading } = useAdminSettings();
+
+  // Hero background images array - now dynamic from admin settings
+  const heroImages = heroSettings.backgroundImages || [
     "https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80",
     "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
     "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
@@ -102,6 +105,13 @@ export default function HomePage() {
 
     return () => clearInterval(interval);
   }, [heroImages.length]);
+
+  // Update document title dynamically
+  useEffect(() => {
+    if (appSettings.siteName) {
+      document.title = `${appSettings.siteName} - Premium Hotel Experience`;
+    }
+  }, [appSettings.siteName]);
 
   // Handle form submission
   const handleBookingSubmit = async (e) => {
@@ -181,6 +191,15 @@ export default function HomePage() {
     }
   };
 
+  // Show loading state while admin settings are loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50/30 to-orange-50/50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50/30 to-orange-50/50">
       {/* Navigation */}
@@ -191,13 +210,21 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
-            <TangMowLogo
-              className="animate-fade-in-up"
-              variant="compact"
-              showText={true}
-              textClassName="text-xl sm:text-2xl font-bold text-gray-800 hidden sm:block"
-              priority={true}
-            />
+            <Link
+              href="/"
+              className="flex items-center space-x-3 animate-fade-in-up"
+            >
+              <Image
+                src={appSettings.logo || "/tang-mow-logo.svg"}
+                alt={appSettings.siteName || "Tang Mow Hotel"}
+                width={40}
+                height={40}
+                className="h-8 w-auto md:h-10"
+              />
+              <span className="text-xl md:text-2xl font-bold text-gray-800">
+                {appSettings.siteName || "Tang Mow Hotel"}
+              </span>
+            </Link>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8 animate-fade-in-up delay-200">
@@ -349,33 +376,33 @@ export default function HomePage() {
                         "2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)",
                     }}
                   >
-                    Tang Mow
-                    <br />
-                    <span
-                      className="text-orange-300 drop-shadow-2xl"
+                    {heroSettings.title || "Welcome to Tang Mow Hotel"}
+                  </h1>
+                  {heroSettings.subtitle && (
+                    <h2
+                      className="text-2xl sm:text-3xl md:text-4xl font-semibold text-orange-300 drop-shadow-2xl"
                       style={{
                         textShadow:
                           "2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)",
                       }}
                     >
-                      Hotel
-                    </span>
-                  </h1>
+                      {heroSettings.subtitle}
+                    </h2>
+                  )}
                 </div>
                 <p
                   className="text-lg sm:text-xl text-white mb-6 sm:mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed animate-fade-in-up delay-200 drop-shadow-lg"
                   style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.7)" }}
                 >
-                  Premium accommodations in the heart of Wewak with modern
-                  amenities, complimentary breakfast, and exceptional Papua New
-                  Guinea hospitality.
+                  {heroSettings.description ||
+                    "Premium accommodations in the heart of Wewak with modern amenities, complimentary breakfast, and exceptional Papua New Guinea hospitality."}
                 </p>
                 <div className="animate-fade-in-up delay-400">
                   <Button
                     onClick={handleLearnMoreClick}
                     className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-medium transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-white/20 cursor-pointer"
                   >
-                    Learn More
+                    {heroSettings.ctaSecondaryText || "Learn More"}
                   </Button>
                 </div>
               </div>
@@ -1269,16 +1296,21 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-10 text-center md:text-left">
             <div className="animate-fade-in-up">
-              <TangMowLogo
-                variant="full"
-                showText={false}
-                className="mb-6 justify-center md:justify-start"
-              />
+              <Link
+                href="/"
+                className="flex items-center justify-center md:justify-start mb-6"
+              >
+                <Image
+                  src={appSettings.logo || "/tang-mow-logo.svg"}
+                  alt={appSettings.siteName || "Tang Mow Hotel"}
+                  width={60}
+                  height={60}
+                  className="h-12 w-auto"
+                />
+              </Link>
               <p className="text-gray-300 leading-relaxed max-w-sm mx-auto md:mx-0">
-                Experience premium hospitality in the heart of Wewak, East Sepik
-                Province. Located at TangMow Plaza Town Centre, we offer modern
-                accommodations, exceptional service, and authentic Papua New
-                Guinea hospitality.
+                {appSettings.siteDescription ||
+                  "Experience premium hospitality in the heart of Wewak, East Sepik Province. Located at TangMow Plaza Town Centre, we offer modern accommodations, exceptional service, and authentic Papua New Guinea hospitality."}
               </p>
             </div>
 
@@ -1333,21 +1365,24 @@ export default function HomePage() {
                   <div className="bg-orange-600/20 p-2 rounded-lg group-hover:bg-orange-600/30 transition-colors duration-300">
                     <Phone className="h-4 w-4 text-orange-400" />
                   </div>
-                  <span>+675 7384 8240</span>
+                  <span>{appSettings.contactPhone || "+675 7384 8240"}</span>
                 </div>
                 <div className="flex items-center gap-3 hover:text-white transition-colors duration-300 group cursor-pointer justify-center md:justify-start">
                   <div className="bg-orange-600/20 p-2 rounded-lg group-hover:bg-orange-600/30 transition-colors duration-300">
                     <Mail className="h-4 w-4 text-orange-400" />
                   </div>
-                  <span>tmhotel.reservation@tangmow.com</span>
+                  <span>
+                    {appSettings.contactEmail ||
+                      "tmhotel.reservation@tangmow.com"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3 hover:text-white transition-colors duration-300 group cursor-pointer justify-center md:justify-start">
                   <div className="bg-orange-600/20 p-2 rounded-lg group-hover:bg-orange-600/30 transition-colors duration-300">
                     <MapPin className="h-4 w-4 text-orange-400" />
                   </div>
                   <span>
-                    4th Floor TangMow Plaza, Town Centre, Wewak East Sepik
-                    Province
+                    {appSettings.address ||
+                      "4th Floor TangMow Plaza, Town Centre, Wewak East Sepik Province"}
                   </span>
                 </div>
               </div>
@@ -1356,8 +1391,8 @@ export default function HomePage() {
 
           <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400 animate-fade-in-up delay-800">
             <p>
-              &copy; 2025 Tang Mow. All rights reserved. Crafted for exceptional
-              hospitality experiences. �
+              &copy; 2025 {appSettings.siteName || "Tang Mow"}. All rights
+              reserved. Crafted for exceptional hospitality experiences.
             </p>
           </div>
         </div>

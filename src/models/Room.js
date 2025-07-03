@@ -4,92 +4,126 @@ const RoomSchema = new mongoose.Schema(
   {
     roomNumber: {
       type: String,
-      required: [true, "Please provide a room number"],
+      required: [true, "Room number is required"],
       unique: true,
     },
-    type: {
-      type: String,
-      enum: ["standard", "deluxe", "suite", "presidential"],
-      required: [true, "Please specify room type"],
-    },
-    category: {
-      type: String,
-      enum: ["single", "double", "twin", "family", "executive"],
-      required: [true, "Please specify room category"],
+    roomType: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "RoomType",
+      required: [true, "Room type is required"],
     },
     floor: {
       type: Number,
-      required: [true, "Please specify floor number"],
+      required: [true, "Floor number is required"],
+      min: [1, "Floor number must be at least 1"],
     },
-    capacity: {
-      adults: {
-        type: Number,
-        required: true,
-        min: 1,
-      },
-      children: {
-        type: Number,
-        default: 0,
-      },
-    },
-    amenities: [
-      {
-        type: String,
-        enum: [
-          "wifi",
-          "tv",
-          "ac",
-          "minibar",
-          "balcony",
-          "seaView",
-          "cityView",
-          "kitchenette",
-          "jacuzzi",
-          "fireplace",
-        ],
-      },
-    ],
-    price: {
-      base: {
-        type: Number,
-        required: [true, "Please provide base price"],
-      },
-      weekend: {
-        type: Number,
-        required: false,
-      },
-      holiday: {
-        type: Number,
-        required: false,
-      },
+    wing: {
+      type: String,
+      enum: ["north", "south", "east", "west", "central"],
     },
     status: {
       type: String,
-      enum: ["available", "occupied", "maintenance", "cleaning", "reserved"],
+      enum: [
+        "available",
+        "occupied",
+        "maintenance",
+        "cleaning",
+        "reserved",
+        "outOfOrder",
+      ],
       default: "available",
     },
-    images: [
+    housekeeping: {
+      lastCleaned: {
+        type: Date,
+      },
+      cleanedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      cleaningStatus: {
+        type: String,
+        enum: ["clean", "dirty", "inspected", "outOfOrder"],
+        default: "clean",
+      },
+      cleaningNotes: {
+        type: String,
+        maxlength: [500, "Cleaning notes cannot exceed 500 characters"],
+      },
+    },
+    maintenance: {
+      lastMaintenance: {
+        type: Date,
+      },
+      maintenanceBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      maintenanceNotes: {
+        type: String,
+        maxlength: [500, "Maintenance notes cannot exceed 500 characters"],
+      },
+      nextMaintenanceDate: {
+        type: Date,
+      },
+    },
+    features: {
+      view: {
+        type: String,
+        enum: ["sea", "city", "garden", "pool", "mountain", "courtyard"],
+      },
+      balcony: {
+        type: Boolean,
+        default: false,
+      },
+      connecting: {
+        type: Boolean,
+        default: false,
+      },
+      connectingRooms: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Room",
+        },
+      ],
+    },
+    accessibilityFeatures: [
       {
-        url: String,
-        alt: String,
+        type: String,
+        enum: [
+          "wheelchair",
+          "hearing",
+          "visual",
+          "mobility",
+          "bathroom",
+          "elevator",
+        ],
       },
     ],
-    description: {
-      type: String,
-      maxlength: [500, "Description cannot be more than 500 characters"],
+    currentGuest: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
-    size: {
-      type: Number, // in square feet
-      required: false,
+    currentBooking: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
     },
-    bedType: {
-      type: String,
-      enum: ["single", "double", "queen", "king", "twin"],
-      required: true,
-    },
+    keyCardNumbers: [String],
     isActive: {
       type: Boolean,
       default: true,
+    },
+    notes: {
+      type: String,
+      maxlength: [1000, "Notes cannot exceed 1000 characters"],
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    modifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   {
@@ -98,7 +132,9 @@ const RoomSchema = new mongoose.Schema(
 );
 
 RoomSchema.index({ roomNumber: 1 });
-RoomSchema.index({ type: 1, status: 1 });
+RoomSchema.index({ roomType: 1, status: 1 });
 RoomSchema.index({ floor: 1 });
+RoomSchema.index({ status: 1 });
+RoomSchema.index({ currentBooking: 1 });
 
 export default mongoose.models.Room || mongoose.model("Room", RoomSchema);
