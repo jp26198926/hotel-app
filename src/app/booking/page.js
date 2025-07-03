@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, CheckCircle, CreditCard, Printer } from "lucide-react";
 import BookingForm from "@/components/BookingForm";
 import PaymentForm from "@/components/PaymentForm";
@@ -10,11 +11,13 @@ import TangMowLogo from "@/components/TangMowLogo";
 import { useToast } from "@/components/Toast";
 
 export default function BookingPage() {
+  const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState("booking"); // 'booking', 'payment', 'confirmation'
   const [bookingData, setBookingData] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [homePageBookingData, setHomePageBookingData] = useState(null);
+  const [preselectedRoomType, setPreselectedRoomType] = useState(null);
   const { showError, showSuccess, ToastComponent } = useToast();
 
   // Define main booking steps
@@ -61,6 +64,14 @@ export default function BookingPage() {
       }
     }
   }, []);
+
+  // Check for preselected room type from URL parameters
+  useEffect(() => {
+    const roomType = searchParams.get("roomType");
+    if (roomType) {
+      setPreselectedRoomType(roomType);
+    }
+  }, [searchParams]);
 
   const handleBookingSubmit = async (data) => {
     setIsProcessing(true);
@@ -561,6 +572,7 @@ export default function BookingPage() {
               onSubmit={handleBookingSubmit}
               isLoading={isProcessing}
               initialData={homePageBookingData}
+              preselectedRoomType={preselectedRoomType}
             />
           )}
 

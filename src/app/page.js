@@ -170,6 +170,17 @@ export default function HomePage() {
     }
   };
 
+  // Handle Learn More button click - scroll to accommodations section
+  const handleLearnMoreClick = () => {
+    const accommodationsSection = document.getElementById("accommodations");
+    if (accommodationsSection) {
+      accommodationsSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50/30 to-orange-50/50">
       {/* Navigation */}
@@ -178,7 +189,7 @@ export default function HomePage() {
         ref={mobileMenuRef}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
             <TangMowLogo
               className="animate-fade-in-up"
@@ -361,7 +372,10 @@ export default function HomePage() {
                   Guinea hospitality.
                 </p>
                 <div className="animate-fade-in-up delay-400">
-                  <Button className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-medium transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-white/20">
+                  <Button
+                    onClick={handleLearnMoreClick}
+                    className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-medium transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-white/20 cursor-pointer"
+                  >
                     Learn More
                   </Button>
                 </div>
@@ -614,7 +628,10 @@ export default function HomePage() {
       </section>
 
       {/* Premium Accommodations Section */}
-      <section className="py-20 bg-orange-300 relative overflow-hidden">
+      <section
+        id="accommodations"
+        className="py-20 bg-orange-300 relative overflow-hidden"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center mb-16 text-center md:text-left gap-6 md:gap-0">
             <div className="animate-fade-in-up">
@@ -674,12 +691,17 @@ export default function HomePage() {
                     <p>• Complimentary breakfast</p>
                     <p>• Free fitness room access</p>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
+                  <div className="flex items-center justify-between mt-auto mb-4">
                     <span className="text-2xl font-bold text-gray-800">
                       K510
                     </span>
                     <span className="text-gray-500">/night</span>
                   </div>
+                  <Link href="/booking?roomType=standard" className="w-full">
+                    <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
+                      Book Now
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -718,12 +740,17 @@ export default function HomePage() {
                     <p>• Complimentary breakfast</p>
                     <p>• Free fitness room access</p>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
+                  <div className="flex items-center justify-between mt-auto mb-4">
                     <span className="text-2xl font-bold text-gray-800">
                       K530
                     </span>
                     <span className="text-gray-500">/night</span>
                   </div>
+                  <Link href="/booking?roomType=standard-b" className="w-full">
+                    <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
+                      Book Now
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -761,12 +788,20 @@ export default function HomePage() {
                     <p>• Complimentary breakfast</p>
                     <p>• Free fitness room access</p>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
+                  <div className="flex items-center justify-between mt-auto mb-4">
                     <span className="text-2xl font-bold text-gray-800">
                       K695
                     </span>
                     <span className="text-gray-500">/night</span>
                   </div>
+                  <Link
+                    href="/booking?roomType=superior-twin"
+                    className="w-full"
+                  >
+                    <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
+                      Book Now
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -804,12 +839,20 @@ export default function HomePage() {
                     <p>• Complimentary breakfast</p>
                     <p>• Free fitness room access</p>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
+                  <div className="flex items-center justify-between mt-auto mb-4">
                     <span className="text-2xl font-bold text-gray-800">
                       K999
                     </span>
                     <span className="text-gray-500">/night</span>
                   </div>
+                  <Link
+                    href="/booking?roomType=family-deluxe"
+                    className="w-full"
+                  >
+                    <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
+                      Book Now
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -1243,6 +1286,9 @@ export default function HomePage() {
                 </li>
                 <li className="hover:text-white transition-all duration-300 cursor-pointer hover:translate-x-1">
                   Fitness Room Access
+                </li>
+                <li className="hover:text-white transition-all duration-300 cursor-pointer hover:translate-x-1">
+                  Free Airport Pickup and Drop off
                 </li>
               </ul>
             </div>

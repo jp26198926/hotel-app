@@ -61,6 +61,7 @@ export default function BookingForm({
   onSubmit,
   isLoading = false,
   initialData = null,
+  preselectedRoomType = null,
 }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -131,6 +132,17 @@ export default function BookingForm({
       setAdditionalGuests([]);
     }
   }, [watchedValues.numberOfGuests]);
+
+  // Effect to handle preselected room type from URL
+  useEffect(() => {
+    if (preselectedRoomType) {
+      const room = roomTypes.find((r) => r.id === preselectedRoomType);
+      if (room) {
+        setSelectedRoom(room);
+        setValue("roomType", room.id);
+      }
+    }
+  }, [preselectedRoomType, setValue]);
 
   // Additional guests management functions
   const updateAdditionalGuest = (index, field, value) => {
