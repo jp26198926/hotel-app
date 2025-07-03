@@ -237,6 +237,9 @@ export const guestBookingSchema = z
 
     roomType: z.string().min(1, "Please select a room type"),
 
+    // Extra bed option
+    extraBed: z.boolean().optional(),
+
     // Optional fields
     specialRequests: z
       .string()

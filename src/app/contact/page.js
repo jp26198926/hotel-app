@@ -96,21 +96,25 @@ export default function ContactPage() {
             {[
               {
                 icon: Phone,
-                title: "Phone",
-                details: ["+1 (555) 123-4567", "+1 (555) 123-4568"],
-                description: "Available 24/7 for your convenience",
+                title: "Phone Numbers",
+                details: ["+675 7384 8240", "+675 8170 8727", "+675 7359 9590"],
+                description: "Available for reservations and inquiries",
               },
               {
                 icon: Mail,
                 title: "Email",
-                details: ["info@grandhotel.com", "reservations@grandhotel.com"],
-                description: "We'll respond within 2 hours",
+                details: ["tmhotel.reservation@tangmow.com"],
+                description: "For reservations and general inquiries",
               },
               {
                 icon: MapPin,
                 title: "Address",
-                details: ["123 Luxury Avenue", "Metropolitan City, MC 12345"],
-                description: "Located in the heart of downtown",
+                details: [
+                  "4th Floor TangMow Plaza",
+                  "Town Centre, Wewak",
+                  "East Sepik Province, Papua New Guinea",
+                ],
+                description: "Located in the heart of Wewak",
               },
             ].map((contact, index) => (
               <div

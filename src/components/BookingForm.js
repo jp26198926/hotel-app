@@ -20,30 +20,40 @@ const roomTypes = [
   {
     id: "standard",
     name: "Standard Room",
-    price: 199,
-    description: "Comfortable room with modern amenities",
+    price: 510,
+    description:
+      "Comfortable room with modern amenities and complimentary breakfast",
     maxGuests: 2,
+    currency: "PGK",
+    inclusions: ["Complimentary breakfast", "Free fitness room access"],
   },
   {
-    id: "deluxe",
-    name: "Deluxe Room",
-    price: 299,
-    description: "Spacious room with city view",
-    maxGuests: 3,
+    id: "standard-b",
+    name: "Standard Room B",
+    price: 530,
+    description:
+      "Enhanced standard room with premium amenities and complimentary breakfast",
+    maxGuests: 2,
+    currency: "PGK",
+    inclusions: ["Complimentary breakfast", "Free fitness room access"],
   },
   {
-    id: "suite",
-    name: "Executive Suite",
-    price: 499,
-    description: "Luxury suite with separate living area",
+    id: "superior-twin",
+    name: "Superior Twin Bed Room",
+    price: 695,
+    description: "Spacious twin bed room ideal for families or groups",
     maxGuests: 4,
+    currency: "PGK",
+    inclusions: ["Complimentary breakfast", "Free fitness room access"],
   },
   {
-    id: "presidential",
-    name: "Presidential Suite",
-    price: 899,
-    description: "Ultimate luxury with panoramic views",
-    maxGuests: 6,
+    id: "family-deluxe",
+    name: "Family Deluxe Room",
+    price: 999,
+    description: "Luxurious family suite with separate living area",
+    maxGuests: 4,
+    currency: "PGK",
+    inclusions: ["Complimentary breakfast", "Free fitness room access"],
   },
 ];
 
@@ -140,10 +150,12 @@ export default function BookingForm({
     if (checkIn && checkOut && room) {
       const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
       const roomTotal = nights * room.price;
-      const taxes = roomTotal * 0.12; // 12% tax
-      const total = roomTotal + taxes;
+      const extraBedCost = watchedValues.extraBed ? nights * 150 : 0;
+      const subtotal = roomTotal + extraBedCost;
+      const taxes = subtotal * 0.12; // 12% tax
+      const total = subtotal + taxes;
 
-      return { nights, roomTotal, taxes, total, room };
+      return { nights, roomTotal, extraBedCost, subtotal, taxes, total, room };
     }
     return null;
   };
@@ -313,15 +325,23 @@ export default function BookingForm({
                           {room.name}
                         </h3>
                         <span className="text-red-700 font-bold">
-                          ${room.price}/night
+                          K{room.price}/night
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">
                         {room.description}
                       </p>
-                      <p className="text-xs text-gray-500">
-                        Max {room.maxGuests} guests
-                      </p>
+                      <div className="text-xs text-gray-500 mb-2">
+                        <p>Max {room.maxGuests} guests</p>
+                        <div className="mt-1">
+                          <strong>Included:</strong>
+                          <ul className="list-disc list-inside mt-1">
+                            {room.inclusions.map((inclusion, idx) => (
+                              <li key={idx}>{inclusion}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -332,6 +352,35 @@ export default function BookingForm({
                   </p>
                 )}
               </div>
+
+              {/* Extra Bed Option */}
+              {watchedValues.roomType && (
+                <div className="mt-6 p-4 bg-orange-50 rounded-xl border border-orange-200">
+                  <h4 className="font-semibold text-gray-900 mb-3">
+                    Additional Options
+                  </h4>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        {...register("extraBed")}
+                        className="h-5 w-5 text-red-700 focus:ring-red-500 border-gray-300 rounded"
+                      />
+                      <div>
+                        <span className="font-medium text-gray-900">
+                          Extra Bed
+                        </span>
+                        <p className="text-sm text-gray-600">
+                          Additional bed for 1 guest
+                        </p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-red-700">
+                      K150.00/night
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -539,18 +588,34 @@ export default function BookingForm({
                     <div className="flex justify-between">
                       <span className="text-gray-600">Room Total:</span>
                       <span className="font-medium text-gray-900">
-                        ${bookingDetails.roomTotal.toFixed(2)}
+                        K{bookingDetails.roomTotal.toFixed(2)}
+                      </span>
+                    </div>
+                    {bookingDetails.extraBedCost > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">
+                          Extra Bed ({bookingDetails.nights} nights):
+                        </span>
+                        <span className="font-medium text-gray-900">
+                          K{bookingDetails.extraBedCost.toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Subtotal:</span>
+                      <span className="font-medium text-gray-900">
+                        K{bookingDetails.subtotal.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Taxes & Fees:</span>
                       <span className="font-medium text-gray-900">
-                        ${bookingDetails.taxes.toFixed(2)}
+                        K{bookingDetails.taxes.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between text-lg font-bold text-gray-900">
                       <span>Total:</span>
-                      <span>${bookingDetails.total.toFixed(2)}</span>
+                      <span>K{bookingDetails.total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

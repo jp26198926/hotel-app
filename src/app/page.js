@@ -338,7 +338,7 @@ export default function HomePage() {
                         "2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)",
                     }}
                   >
-                    Luxury
+                    Tang Mow
                     <br />
                     Hotel{" "}
                     <span
@@ -348,7 +348,7 @@ export default function HomePage() {
                           "2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)",
                       }}
                     >
-                      Experience
+                      Wewak
                     </span>
                   </h1>
                 </div>
@@ -356,8 +356,9 @@ export default function HomePage() {
                   className="text-lg sm:text-xl text-white mb-6 sm:mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed animate-fade-in-up delay-200 drop-shadow-lg"
                   style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.7)" }}
                 >
-                  Experience unparalleled comfort and elegance at our premium
-                  hotel, restaurant, and event venues.
+                  Premium accommodations in the heart of Wewak with modern
+                  amenities, complimentary breakfast, and exceptional Papua New
+                  Guinea hospitality.
                 </p>
                 <div className="animate-fade-in-up delay-400">
                   <Button className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-medium transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-white/20">
@@ -546,9 +547,11 @@ export default function HomePage() {
                 </li>
               </ul>
               <div className="flex justify-center md:justify-start">
-                <Button className="bg-red-700 hover:bg-red-800 text-white px-8 py-3 rounded-full transition-all duration-300">
-                  Book Event Space
-                </Button>
+                <Link href="/events">
+                  <Button className="bg-red-700 hover:bg-red-800 text-white px-8 py-3 rounded-full transition-all duration-300">
+                    Book Event Space
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -581,9 +584,11 @@ export default function HomePage() {
                 </li>
               </ul>
               <div className="flex justify-center md:justify-start">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full transition-all duration-300">
-                  Reserve Conference Room
-                </Button>
+                <Link href="/events">
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full transition-all duration-300">
+                    Reserve Conference Room
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -619,9 +624,9 @@ export default function HomePage() {
                 Accommodations
               </h2>
               <p className="text-gray-700 text-lg max-w-md mx-auto md:mx-0">
-                Experience luxury and comfort in our carefully designed rooms
-                and suites. Each space offers modern amenities and elegant
-                furnishings.
+                Discover our range of comfortable accommodations designed for
+                modern travelers. Each room features premium amenities,
+                complimentary breakfast, and free fitness room access.
               </p>
             </div>
             <div className="flex gap-3 animate-fade-in-up delay-200">
@@ -634,87 +639,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Deluxe Suite */}
-            <div className="group hover-lift animate-fade-in-up h-full">
-              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="Deluxe Hotel Suite"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      Deluxe Suite
-                    </h3>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-4 flex-grow">
-                    Spacious suite with modern amenities, city views, and
-                    premium furnishings for the ultimate comfort
-                  </p>
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="text-2xl font-bold text-gray-800">
-                      $299
-                    </span>
-                    <span className="text-gray-500">/night</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Executive Room */}
-            <div className="group hover-lift animate-fade-in-up delay-200 h-full">
-              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="Executive Hotel Room"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      Executive Room
-                    </h3>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-4 flex-grow">
-                    Perfect for business travelers with workspace, high-speed
-                    WiFi, and executive lounge access
-                  </p>
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="text-2xl font-bold text-gray-800">
-                      $199
-                    </span>
-                    <span className="text-gray-500">/night</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Standard Room */}
-            <div className="group hover-lift animate-fade-in-up delay-400 h-full">
+            <div className="group hover-lift animate-fade-in-up h-full">
               <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
                 <div className="relative h-64 overflow-hidden">
                   <Image
@@ -738,17 +665,172 @@ export default function HomePage() {
                       ))}
                     </div>
                   </div>
-                  <p className="text-gray-600 mb-4 flex-grow">
-                    Comfortable and well-appointed room with all essential
-                    amenities for a pleasant stay
+                  <p className="text-gray-600 mb-3 flex-grow">
+                    Comfortable room with modern amenities and complimentary
+                    breakfast
                   </p>
+                  <div className="text-sm text-gray-500 mb-4">
+                    <p>• 2 guests maximum</p>
+                    <p>• Complimentary breakfast</p>
+                    <p>• Free fitness room access</p>
+                  </div>
                   <div className="flex items-center justify-between mt-auto">
                     <span className="text-2xl font-bold text-gray-800">
-                      $149
+                      K510
                     </span>
                     <span className="text-gray-500">/night</span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Standard Room B */}
+            <div className="group hover-lift animate-fade-in-up delay-200 h-full">
+              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+                <div className="relative h-64 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Standard Room B"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      Standard Room B
+                    </h3>
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-4 w-4 text-yellow-400 fill-current"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mb-3 flex-grow">
+                    Enhanced standard room with premium amenities and
+                    complimentary breakfast
+                  </p>
+                  <div className="text-sm text-gray-500 mb-4">
+                    <p>• 2 guests maximum</p>
+                    <p>• Complimentary breakfast</p>
+                    <p>• Free fitness room access</p>
+                  </div>
+                  <div className="flex items-center justify-between mt-auto">
+                    <span className="text-2xl font-bold text-gray-800">
+                      K530
+                    </span>
+                    <span className="text-gray-500">/night</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Superior Twin Bed Room */}
+            <div className="group hover-lift animate-fade-in-up delay-400 h-full">
+              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+                <div className="relative h-64 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80"
+                    alt="Superior Twin Bed Room"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      Superior Twin Bed Room
+                    </h3>
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-4 w-4 text-yellow-400 fill-current"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mb-3 flex-grow">
+                    Spacious twin bed room ideal for families or groups
+                  </p>
+                  <div className="text-sm text-gray-500 mb-4">
+                    <p>• 4 guests maximum</p>
+                    <p>• Complimentary breakfast</p>
+                    <p>• Free fitness room access</p>
+                  </div>
+                  <div className="flex items-center justify-between mt-auto">
+                    <span className="text-2xl font-bold text-gray-800">
+                      K695
+                    </span>
+                    <span className="text-gray-500">/night</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Family Deluxe Room */}
+            <div className="group hover-lift animate-fade-in-up delay-600 h-full">
+              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+                <div className="relative h-64 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Family Deluxe Room"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      Family Deluxe Room
+                    </h3>
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-4 w-4 text-yellow-400 fill-current"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mb-3 flex-grow">
+                    Luxurious family suite with separate living area
+                  </p>
+                  <div className="text-sm text-gray-500 mb-4">
+                    <p>• 4 guests maximum</p>
+                    <p>• Complimentary breakfast</p>
+                    <p>• Free fitness room access</p>
+                  </div>
+                  <div className="flex items-center justify-between mt-auto">
+                    <span className="text-2xl font-bold text-gray-800">
+                      K999
+                    </span>
+                    <span className="text-gray-500">/night</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Extra Bed Information */}
+          <div className="mt-12 text-center animate-fade-in-up delay-800">
+            <div className="bg-white rounded-2xl p-6 shadow-lg max-w-md mx-auto">
+              <h4 className="text-lg font-semibold text-gray-800 mb-3">
+                Additional Options
+              </h4>
+              <div className="flex items-center justify-between">
+                <div className="text-left">
+                  <span className="font-medium text-gray-900">Extra Bed</span>
+                  <p className="text-sm text-gray-600">
+                    Additional bed for 1 guest
+                  </p>
+                </div>
+                <span className="text-xl font-bold text-red-700">
+                  K150/night
+                </span>
               </div>
             </div>
           </div>
@@ -1137,9 +1219,10 @@ export default function HomePage() {
                 className="mb-6 justify-center md:justify-start"
               />
               <p className="text-gray-300 leading-relaxed max-w-sm mx-auto md:mx-0">
-                Experience luxury hospitality at its finest. From elegant
-                accommodations to exquisite dining and memorable events, we
-                create exceptional moments for every guest.
+                Experience premium hospitality in the heart of Wewak, East Sepik
+                Province. Located at TangMow Plaza Town Centre, we offer modern
+                accommodations, exceptional service, and authentic Papua New
+                Guinea hospitality.
               </p>
             </div>
 
@@ -1150,13 +1233,16 @@ export default function HomePage() {
                   Hotel Accommodations
                 </li>
                 <li className="hover:text-white transition-all duration-300 cursor-pointer hover:translate-x-1">
-                  Fine Dining Restaurant
+                  Bar and Restaurant
                 </li>
                 <li className="hover:text-white transition-all duration-300 cursor-pointer hover:translate-x-1">
-                  Event & Function Halls
+                  Room Service
                 </li>
                 <li className="hover:text-white transition-all duration-300 cursor-pointer hover:translate-x-1">
-                  Concierge Services
+                  Laundry Service
+                </li>
+                <li className="hover:text-white transition-all duration-300 cursor-pointer hover:translate-x-1">
+                  Fitness Room Access
                 </li>
               </ul>
             </div>
@@ -1188,19 +1274,22 @@ export default function HomePage() {
                   <div className="bg-orange-600/20 p-2 rounded-lg group-hover:bg-orange-600/30 transition-colors duration-300">
                     <Phone className="h-4 w-4 text-orange-400" />
                   </div>
-                  <span>+1 (555) 987-6543</span>
+                  <span>+675 7384 8240</span>
                 </div>
                 <div className="flex items-center gap-3 hover:text-white transition-colors duration-300 group cursor-pointer justify-center md:justify-start">
                   <div className="bg-orange-600/20 p-2 rounded-lg group-hover:bg-orange-600/30 transition-colors duration-300">
                     <Mail className="h-4 w-4 text-orange-400" />
                   </div>
-                  <span>reservations@grandhotel.com</span>
+                  <span>tmhotel.reservation@tangmow.com</span>
                 </div>
                 <div className="flex items-center gap-3 hover:text-white transition-colors duration-300 group cursor-pointer justify-center md:justify-start">
                   <div className="bg-orange-600/20 p-2 rounded-lg group-hover:bg-orange-600/30 transition-colors duration-300">
                     <MapPin className="h-4 w-4 text-orange-400" />
                   </div>
-                  <span>Downtown District, Metro City</span>
+                  <span>
+                    4th Floor TangMow Plaza, Town Centre, Wewak East Sepik
+                    Province
+                  </span>
                 </div>
               </div>
             </div>

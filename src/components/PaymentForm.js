@@ -192,20 +192,20 @@ export default function PaymentForm({
           <div class="section-title">Pricing Summary</div>
           <div class="info-row">
             <span class="info-label">Subtotal:</span>
-            <span class="info-value">$${
+            <span class="info-value">K${
               bookingData.subtotal?.toFixed(2) || "0.00"
             }</span>
           </div>
           <div class="info-row">
             <span class="info-label">Taxes & Fees (12%):</span>
-            <span class="info-value">$${
+            <span class="info-value">K${
               bookingData.taxes?.toFixed(2) || "0.00"
             }</span>
           </div>
           <div class="total-box">
             <div class="total-row">
               <span>Total Booking Cost:</span>
-              <span>$${bookingData.totalAmount?.toFixed(2) || "0.00"}</span>
+              <span>K${bookingData.totalAmount?.toFixed(2) || "0.00"}</span>
             </div>
           </div>
         </div>
@@ -636,13 +636,14 @@ export default function PaymentForm({
                         <strong>Bank Transfer Details:</strong>
                       </p>
                       <p>• Account Name: Tang Mow Ltd.</p>
-                      <p>• Account Number: 1234-5678-9012</p>
-                      <p>• Bank: Central Bank</p>
+                      <p>• Account Number: [Contact hotel for details]</p>
+                      <p>• Bank: [Contact hotel for details]</p>
                       <p>
-                        • Amount: $
+                        • Amount: K
                         {bookingData.paymentRequired?.toFixed(2) || "0.00"}
                       </p>
                       <p>• Reference: {bookingData.bookingReference}</p>
+                      <p>• Contact: +675 7384 8240 for banking details</p>
                     </div>
 
                     <div className="mt-4">
@@ -800,7 +801,7 @@ export default function PaymentForm({
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal:</span>
                     <span className="font-medium text-gray-900">
-                      ${bookingData.subtotal?.toFixed(2) || "0.00"}
+                      K{bookingData.subtotal?.toFixed(2) || "0.00"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -812,7 +813,7 @@ export default function PaymentForm({
                   <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
                     <span>Total Booking Cost:</span>
                     <span>
-                      ${bookingData.totalAmount?.toFixed(2) || "0.00"}
+                      K{bookingData.totalAmount?.toFixed(2) || "0.00"}
                     </span>
                   </div>
 

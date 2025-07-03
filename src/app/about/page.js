@@ -59,17 +59,18 @@ export default function AboutPage() {
                 A Legacy of Excellence
               </h2>
               <p className="text-gray-600 text-lg mb-6">
-                Founded in 1990, Tang Mow began as a vision to create a
-                sanctuary where luxury meets comfort. Our founder, inspired by
-                the grand hotels of Europe, set out to establish a destination
-                that would become synonymous with exceptional service and
-                timeless elegance.
+                Tang Mow Hotel is located in the heart of Wewak, East Sepik
+                Province, offering guests premium accommodations and exceptional
+                service. Situated on the 4th floor of TangMow Plaza in Town
+                Centre, our hotel provides convenient access to the city&apos;s
+                business district and local attractions.
               </p>
               <p className="text-gray-600 text-lg mb-6">
-                Today, we continue to honor that vision while embracing modern
-                innovations and sustainable practices. Our commitment to
-                excellence has earned us recognition as one of the premier
-                luxury hotels in the region.
+                We pride ourselves on delivering personalized hospitality with
+                modern amenities including complimentary breakfast, fitness room
+                access, room service, and laundry facilities. Our commitment to
+                excellence ensures every guest enjoys a comfortable and
+                memorable stay.
               </p>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
