@@ -193,3 +193,145 @@ export const restaurantReservationSchema = z.object({
     ])
     .optional(),
 });
+
+// Enhanced Booking validation schema
+export const guestBookingSchema = z
+  .object({
+    // Guest Information
+    guestName: z
+      .string()
+      .min(2, "Name must be at least 2 characters")
+      .max(50, "Name must be less than 50 characters")
+      .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces"),
+
+    guestEmail: z
+      .string()
+      .email("Please enter a valid email address")
+      .toLowerCase(),
+
+    guestPhone: z
+      .string()
+      .min(10, "Phone number must be at least 10 digits")
+      .regex(/^[\+]?[1-9][\d]{0,15}$/, "Please enter a valid phone number"),
+
+    // Booking Details
+    checkInDate: z.string().refine((date) => {
+      const checkIn = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return checkIn >= today;
+    }, "Check-in date must be today or in the future"),
+
+    checkOutDate: z.string().refine((date) => {
+      const checkOut = new Date(date);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      return checkOut >= tomorrow;
+    }, "Check-out date must be at least tomorrow"),
+
+    numberOfGuests: z
+      .number()
+      .min(1, "At least 1 guest is required")
+      .max(10, "Maximum 10 guests allowed"),
+
+    roomType: z.string().min(1, "Please select a room type"),
+
+    // Optional fields
+    specialRequests: z
+      .string()
+      .max(500, "Special requests must be less than 500 characters")
+      .optional(),
+
+    // Additional guests (optional)
+    additionalGuests: z
+      .array(
+        z.object({
+          name: z
+            .string()
+            .min(2, "Guest name must be at least 2 characters")
+            .max(50, "Guest name must be less than 50 characters")
+            .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces"),
+          age: z
+            .number()
+            .min(1, "Age must be at least 1")
+            .max(120, "Age must be less than 120")
+            .optional(),
+        })
+      )
+      .optional()
+      .default([]),
+  })
+  .refine(
+    (data) => {
+      // Custom validation: check-out must be after check-in
+      const checkIn = new Date(data.checkInDate);
+      const checkOut = new Date(data.checkOutDate);
+      return checkOut > checkIn;
+    },
+    {
+      message: "Check-out date must be after check-in date",
+      path: ["checkOutDate"],
+    }
+  );
+
+// Contact form validation schema
+export const contactFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be less than 50 characters"),
+
+  email: z.string().email("Please enter a valid email address"),
+
+  phone: z
+    .string()
+    .optional()
+    .or(
+      z
+        .string()
+        .regex(/^[\+]?[1-9][\d]{0,15}$/, "Please enter a valid phone number")
+    ),
+
+  subject: z.string().min(1, "Please select a subject"),
+
+  message: z
+    .string()
+    .min(10, "Message must be at least 10 characters")
+    .max(1000, "Message must be less than 1000 characters"),
+});
+
+// Payment validation schema
+export const paymentSchema = z.object({
+  cardNumber: z.string().regex(/^\d{16}$/, "Card number must be 16 digits"),
+
+  expiryMonth: z.string().regex(/^(0[1-9]|1[0-2])$/, "Invalid expiry month"),
+
+  expiryYear: z
+    .string()
+    .regex(/^\d{4}$/, "Invalid expiry year")
+    .refine((year) => {
+      const currentYear = new Date().getFullYear();
+      const inputYear = parseInt(year);
+      return inputYear >= currentYear && inputYear <= currentYear + 20;
+    }, "Invalid expiry year"),
+
+  cvv: z.string().regex(/^\d{3,4}$/, "CVV must be 3 or 4 digits"),
+
+  cardHolderName: z
+    .string()
+    .min(2, "Cardholder name must be at least 2 characters")
+    .max(50, "Cardholder name must be less than 50 characters")
+    .regex(
+      /^[a-zA-Z\s]+$/,
+      "Cardholder name can only contain letters and spaces"
+    ),
+
+  billingAddress: z.object({
+    street: z.string().min(5, "Street address must be at least 5 characters"),
+    city: z.string().min(2, "City must be at least 2 characters"),
+    state: z.string().min(2, "State must be at least 2 characters"),
+    zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid ZIP code"),
+    country: z.string().min(2, "Please select a country"),
+  }),
+});
