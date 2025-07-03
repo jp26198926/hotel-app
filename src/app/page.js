@@ -351,7 +351,6 @@ export default function HomePage() {
                   >
                     Tang Mow
                     <br />
-                    Hotel{" "}
                     <span
                       className="text-orange-300 drop-shadow-2xl"
                       style={{
@@ -359,7 +358,7 @@ export default function HomePage() {
                           "2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)",
                       }}
                     >
-                      Wewak
+                      Hotel
                     </span>
                   </h1>
                 </div>
