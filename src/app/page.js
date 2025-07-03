@@ -942,6 +942,9 @@ export default function HomePage() {
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                    onClick={() =>
+                      router.push("/restaurant?item=grilled-lobster")
+                    }
                   >
                     Order Now
                   </Button>
@@ -996,6 +999,7 @@ export default function HomePage() {
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                    onClick={() => router.push("/restaurant?item=wagyu-beef")}
                   >
                     Order Now
                   </Button>
@@ -1050,6 +1054,9 @@ export default function HomePage() {
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                    onClick={() =>
+                      router.push("/restaurant?item=seafood-paella")
+                    }
                   >
                     Order Now
                   </Button>
@@ -1104,6 +1111,7 @@ export default function HomePage() {
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                    onClick={() => router.push("/restaurant?item=tuna-tartare")}
                   >
                     Order Now
                   </Button>
@@ -1158,6 +1166,9 @@ export default function HomePage() {
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                    onClick={() =>
+                      router.push("/restaurant?item=chocolate-souffle")
+                    }
                   >
                     Order Now
                   </Button>
@@ -1212,6 +1223,7 @@ export default function HomePage() {
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                    onClick={() => router.push("/restaurant?item=wine-pairing")}
                   >
                     Order Now
                   </Button>
@@ -1226,12 +1238,14 @@ export default function HomePage() {
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-auto border-2 border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400 shadow-md hover:shadow-lg transition-all duration-300 px-8 py-4 hover-lift"
+                onClick={() => router.push("/restaurant")}
               >
                 View Full Menu
               </Button>
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 hover-lift"
+                onClick={() => router.push("/restaurant")}
               >
                 Make Reservation
               </Button>
