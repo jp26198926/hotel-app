@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle, CreditCard, Printer } from "lucide-react";
 import BookingForm from "@/components/BookingForm";
 import PaymentForm from "@/components/PaymentForm";
 import Stepper from "@/components/Stepper";
+import TangMowLogo from "@/components/TangMowLogo";
 import { useToast } from "@/components/Toast";
 
 export default function BookingPage() {
@@ -120,7 +121,7 @@ export default function BookingPage() {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Booking Confirmation - Grand Hotel</title>
+        <title>Booking Confirmation - Tang Mow</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
@@ -135,13 +136,13 @@ export default function BookingPage() {
           
           .header { 
             text-align: center; 
-            border-bottom: 3px solid #f97316; 
+            border-bottom: 3px solid #C63527; 
             padding-bottom: 30px; 
             margin-bottom: 40px; 
           }
           
           .hotel-name { 
-            color: #f97316; 
+            color: #C63527; 
             font-size: 36px; 
             font-weight: bold; 
             margin-bottom: 10px; 
@@ -156,7 +157,7 @@ export default function BookingPage() {
           }
           
           .confirmation-badge { 
-            background: linear-gradient(135deg, #f97316, #fbbf24); 
+            background: linear-gradient(135deg, #C63527, #E85A2B); 
             color: white; 
             padding: 15px 25px; 
             border-radius: 12px; 
@@ -177,9 +178,9 @@ export default function BookingPage() {
           .section-title { 
             font-size: 20px; 
             font-weight: bold; 
-            color: #f97316; 
+            color: #C63527; 
             margin-bottom: 20px; 
-            border-bottom: 2px solid #fbbf24; 
+            border-bottom: 2px solid #E85A2B; 
             padding-bottom: 8px; 
             display: flex;
             align-items: center;
@@ -189,7 +190,7 @@ export default function BookingPage() {
             width: 24px;
             height: 24px;
             margin-right: 10px;
-            fill: #f97316;
+            fill: #C63527;
           }
           
           .info-grid {
@@ -220,8 +221,8 @@ export default function BookingPage() {
           }
           
           .total-section {
-            background: linear-gradient(135deg, #fff7ed, #fef3c7);
-            border: 2px solid #f97316;
+            background: linear-gradient(135deg, #FFE4E1, #F4A460);
+            border: 2px solid #C63527;
             border-radius: 12px;
             padding: 20px;
             margin: 25px 0;
@@ -232,7 +233,7 @@ export default function BookingPage() {
             justify-content: space-between; 
             font-size: 20px; 
             font-weight: bold; 
-            color: #f97316; 
+            color: #C63527; 
             margin-bottom: 10px;
           }
           
@@ -273,7 +274,7 @@ export default function BookingPage() {
           }
           
           .thank-you {
-            color: #f97316;
+            color: #C63527;
             font-weight: bold;
             font-size: 16px;
             margin-bottom: 10px;
@@ -288,7 +289,7 @@ export default function BookingPage() {
       </head>
       <body>
         <div class="header">
-          <div class="hotel-name">Grand Hotel</div>
+          <div class="hotel-name">Tang Mow</div>
           <div class="hotel-tagline">Luxury Accommodation & Fine Dining</div>
           <div class="confirmation-badge">✓ BOOKING CONFIRMED</div>
         </div>
@@ -467,9 +468,9 @@ export default function BookingPage() {
         </div>
 
         <div class="footer">
-          <div class="thank-you">Thank you for choosing Grand Hotel!</div>
+          <div class="thank-you">Thank you for choosing Tang Mow!</div>
           <div class="contact-info">
-            <strong>Grand Hotel</strong><br>
+            <strong>Tang Mow</strong><br>
             123 Luxury Avenue, City, State 12345<br>
             Phone: (555) 123-4567 | Email: reservations@grandhotel.com<br>
             Website: www.grandhotel.com
@@ -514,11 +515,11 @@ export default function BookingPage() {
                 Back to Home
               </span>
             </Link>
-            <div className="flex items-center space-x-2">
-              <span className="text-lg sm:text-2xl font-bold gradient-text">
-                Grand Hotel
-              </span>
-            </div>
+            <TangMowLogo
+              variant="compact"
+              showText={true}
+              textClassName="text-lg sm:text-2xl font-bold gradient-text hidden sm:block"
+            />
           </div>
         </div>
       </header>
@@ -585,7 +586,7 @@ export default function BookingPage() {
               </h2>
 
               <p className="text-base sm:text-lg text-gray-800 mb-6 sm:mb-8 px-2">
-                Thank you for choosing Grand Hotel. Your reservation has been
+                Thank you for choosing Tang Mow. Your reservation has been
                 confirmed and a confirmation email has been sent to{" "}
                 <span className="font-semibold text-gray-900 break-all">
                   {bookingData.guestEmail}

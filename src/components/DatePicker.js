@@ -232,10 +232,10 @@ export default function DatePicker({
                     : isDisabled
                     ? "text-gray-300 cursor-not-allowed"
                     : isSelected
-                    ? "bg-orange-500 text-white font-semibold"
+                    ? "bg-red-700 text-white font-semibold"
                     : isToday
-                    ? "bg-orange-100 text-orange-600 font-medium hover:bg-orange-200"
-                    : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                    ? "bg-red-100 text-red-700 font-medium hover:bg-red-200"
+                    : "text-gray-700 hover:bg-red-50 hover:text-red-700"
                 }`}
                 disabled={isDisabled}
               >
@@ -259,7 +259,7 @@ export default function DatePicker({
 
       <div
         onClick={handleInputClick}
-        className={`w-full border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-orange-500 focus-within:border-transparent transition-all duration-200 cursor-pointer bg-gray-50 flex items-center justify-between hover:border-orange-300 hover:shadow-md ${
+        className={`w-full border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-red-500 focus-within:border-transparent transition-all duration-200 cursor-pointer bg-gray-50 flex items-center justify-between hover:border-red-300 hover:shadow-md ${
           disabled ? "opacity-50 cursor-not-allowed" : ""
         } ${sizeClasses[size]}`}
       >

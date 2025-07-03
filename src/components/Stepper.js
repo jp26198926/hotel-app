@@ -19,9 +19,9 @@ const Stepper = ({
   const getStepStyles = (state) => {
     switch (state) {
       case "completed":
-        return "bg-gradient-to-r from-orange-600 to-yellow-600 text-white border-orange-600";
+        return "bg-gradient-to-r from-red-700 to-orange-600 text-white border-red-700";
       case "active":
-        return "bg-white border-orange-600 text-orange-600 ring-4 ring-orange-100";
+        return "bg-white border-red-700 text-red-700 ring-4 ring-red-100";
       case "inactive":
         return "bg-gray-100 border-gray-300 text-gray-400";
       default:
@@ -32,16 +32,16 @@ const Stepper = ({
   const getConnectorStyles = (stepIndex) => {
     const isCompleted = currentStep > stepIndex;
     return isCompleted
-      ? "bg-gradient-to-r from-orange-600 to-yellow-600"
+      ? "bg-gradient-to-r from-red-700 to-orange-600"
       : "bg-gray-200";
   };
 
   const getLabelStyles = (state) => {
     switch (state) {
       case "completed":
-        return "text-orange-600 font-semibold";
+        return "text-red-700 font-semibold";
       case "active":
-        return "text-orange-600 font-semibold";
+        return "text-red-700 font-semibold";
       case "inactive":
         return "text-gray-500";
       default:

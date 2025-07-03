@@ -6,9 +6,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Hotel Management System",
+  title: "Tang Mow - Premium Hotel Experience",
   description:
-    "Modern hotel and restaurant management application built with Next.js",
+    "Experience luxury and comfort at Tang Mow hotel. Book your perfect stay with our modern booking system.",
 };
 
 export default function RootLayout({ children }) {

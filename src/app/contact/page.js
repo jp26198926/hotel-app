@@ -67,9 +67,7 @@ export default function ContactPage() {
               <span className="font-medium">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold gradient-text">
-                Grand Hotel
-              </span>
+              <span className="text-2xl font-bold gradient-text">Tang Mow</span>
             </div>
           </div>
         </div>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Flowing decorative elements inspired by the original Tang Mow logo -->
+  <defs>
+    <linearGradient id="warmGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:0.8"/>
+      <stop offset="50%" style="stop-color:#D2691E;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#8B2635;stop-opacity:0.7"/>
+    </linearGradient>
+    
+    <linearGradient id="peachGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE5CC;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#FFDAB9;stop-opacity:0.6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Flowing abstract shapes -->
+  <path d="M15 20 Q30 10 45 20 Q60 30 75 20 Q90 10 105 20 Q120 30 135 20 Q150 10 165 20 Q180 30 195 20" 
+        stroke="url(#warmGradient)" stroke-width="3" fill="none" opacity="0.7"/>
+  
+  <path d="M10 35 Q25 25 40 35 Q55 45 70 35 Q85 25 100 35 Q115 45 130 35 Q145 25 160 35 Q175 45 190 35" 
+        stroke="#D2691E" stroke-width="2" fill="none" opacity="0.6"/>
+  
+  <path d="M20 50 Q35 40 50 50 Q65 60 80 50 Q95 40 110 50 Q125 60 140 50 Q155 40 170 50 Q185 60 195 50" 
+        stroke="#8B2635" stroke-width="2" fill="none" opacity="0.5"/>
+  
+  <path d="M5 65 Q20 55 35 65 Q50 75 65 65 Q80 55 95 65 Q110 75 125 65 Q140 55 155 65 Q170 75 185 65" 
+        stroke="#FF6B35" stroke-width="2" fill="none" opacity="0.4"/>
+  
+  <!-- Background accent -->
+  <ellipse cx="100" cy="40" rx="80" ry="25" fill="url(#peachGradient)"/>
+  
+  <!-- Main text -->
+  <text x="100" y="38" font-family="serif" font-size="24" font-weight="bold" 
+        text-anchor="middle" fill="#2d3748" letter-spacing="2px">
+    tang mow
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="100" y="55" font-family="serif" font-size="10" font-weight="300" 
+        text-anchor="middle" fill="#8B2635" opacity="0.9" letter-spacing="4px">
+    L I M I T E D
+  </text>
+</svg>

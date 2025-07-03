@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="160" height="60" viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect width="160" height="60" fill="white" rx="6"/>
+  
+  <!-- Decorative flowing elements inspired by the original logo -->
+  <path d="M20 10 Q30 5 40 10 Q50 15 60 10 Q70 5 80 10 Q90 15 100 10 Q110 5 120 10 Q130 15 140 10" 
+        stroke="#D2691E" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M20 20 Q30 15 40 20 Q50 25 60 20 Q70 15 80 20 Q90 25 100 20 Q110 15 120 20 Q130 25 140 20" 
+        stroke="#8B2635" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M20 50 Q30 45 40 50 Q50 55 60 50 Q70 45 80 50 Q90 55 100 50 Q110 45 120 50 Q130 55 140 50" 
+        stroke="#FF6B35" stroke-width="2" fill="none" opacity="0.5"/>
+  
+  <!-- Main text -->
+  <text x="80" y="35" font-family="serif" font-size="20" font-weight="bold" 
+        text-anchor="middle" fill="#2d3748">
+    tang mow
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="80" y="50" font-family="serif" font-size="8" font-weight="300" 
+        text-anchor="middle" fill="#8B2635" opacity="0.8">
+    L I M I T E D
+  </text>
+  
+  <!-- Accent line -->
+  <line x1="30" y1="38" x2="130" y2="38" stroke="#FF6B35" stroke-width="1" opacity="0.6"/>
+</svg>

@@ -166,9 +166,7 @@ export default function GalleryPage() {
               <span className="font-medium">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold gradient-text">
-                Grand Hotel
-              </span>
+              <span className="text-2xl font-bold gradient-text">Tang Mow</span>
             </div>
           </div>
         </div>
@@ -182,7 +180,7 @@ export default function GalleryPage() {
               Photo <span className="gradient-text">Gallery</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in-up delay-200">
-              Take a visual journey through Grand Hotel&apos;s luxurious
+              Take a visual journey through Tang Mow&apos;s luxurious
               accommodations, world-class dining, and elegant event spaces.
             </p>
           </div>
@@ -301,7 +299,7 @@ export default function GalleryPage() {
           </h2>
           <p className="text-gray-600 text-lg mb-8">
             These photos only tell part of the story. Book your stay today and
-            experience the luxury and elegance of Grand Hotel firsthand.
+            experience the luxury and elegance of Tang Mow firsthand.
           </p>
           <Link
             href="/"

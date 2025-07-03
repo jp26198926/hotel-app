@@ -28,9 +28,7 @@ export default function AboutPage() {
               <span className="font-medium">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold gradient-text">
-                Grand Hotel
-              </span>
+              <span className="text-2xl font-bold gradient-text">Tang Mow</span>
             </div>
           </div>
         </div>
@@ -44,9 +42,9 @@ export default function AboutPage() {
               Our <span className="gradient-text">Story</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in-up delay-200">
-              For over three decades, Grand Hotel has been setting the standard
-              for luxury hospitality, creating unforgettable experiences for
-              guests from around the world.
+              For over three decades, Tang Mow has been setting the standard for
+              luxury hospitality, creating unforgettable experiences for guests
+              from around the world.
             </p>
           </div>
         </div>
@@ -61,7 +59,7 @@ export default function AboutPage() {
                 A Legacy of Excellence
               </h2>
               <p className="text-gray-600 text-lg mb-6">
-                Founded in 1990, Grand Hotel began as a vision to create a
+                Founded in 1990, Tang Mow began as a vision to create a
                 sanctuary where luxury meets comfort. Our founder, inspired by
                 the grand hotels of Europe, set out to establish a destination
                 that would become synonymous with exceptional service and
@@ -91,7 +89,7 @@ export default function AboutPage() {
             <div className="animate-slide-in-right">
               <Image
                 src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80"
-                alt="Grand Hotel Historic Photo"
+                alt="Tang Mow Historic Photo"
                 width={600}
                 height={400}
                 className="rounded-2xl shadow-2xl"
@@ -256,11 +254,11 @@ export default function AboutPage() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Experience the Grand Hotel Difference
+            Experience the Tang Mow Difference
           </h2>
           <p className="text-gray-600 text-lg mb-8">
-            Join thousands of satisfied guests who have made Grand Hotel their
-            home away from home.
+            Join thousands of satisfied guests who have made Tang Mow their home
+            away from home.
           </p>
           <Link
             href="/"

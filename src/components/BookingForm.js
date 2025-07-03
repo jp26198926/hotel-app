@@ -297,7 +297,7 @@ export default function BookingForm({
                       key={room.id}
                       className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
                         watchedValues.roomType === room.id
-                          ? "border-orange-500 bg-orange-50"
+                          ? "border-red-700 bg-red-50"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
                       onClick={() => setValue("roomType", room.id)}
@@ -312,7 +312,7 @@ export default function BookingForm({
                         <h3 className="font-semibold text-gray-900">
                           {room.name}
                         </h3>
-                        <span className="text-orange-600 font-bold">
+                        <span className="text-red-700 font-bold">
                           ${room.price}/night
                         </span>
                       </div>
@@ -346,7 +346,7 @@ export default function BookingForm({
                   <input
                     type="text"
                     {...register("guestName")}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900"
                     placeholder="Enter your full name"
                   />
                   {errors.guestName && (
@@ -364,7 +364,7 @@ export default function BookingForm({
                   <input
                     type="email"
                     {...register("guestEmail")}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900"
                     placeholder="your@email.com"
                   />
                   {errors.guestEmail && (
@@ -382,7 +382,7 @@ export default function BookingForm({
                   <input
                     type="tel"
                     {...register("guestPhone")}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900"
                     placeholder="+1 (555) 123-4567"
                   />
                   {errors.guestPhone && (
@@ -641,7 +641,7 @@ export default function BookingForm({
                 const formData = getValues();
                 handleStepSubmit(formData);
               }}
-              className="ml-auto flex items-center space-x-2 px-8 py-3 bg-gradient-to-r from-orange-600 to-yellow-600 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-yellow-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ml-auto flex items-center space-x-2 px-8 py-3 bg-gradient-to-r from-red-700 to-orange-600 text-white font-semibold rounded-xl hover:from-red-800 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>

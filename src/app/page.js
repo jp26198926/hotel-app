@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import DatePicker from "@/components/DatePicker";
+import TangMowLogo from "@/components/TangMowLogo";
 import { useToast } from "@/components/Toast";
 
 export default function HomePage() {
@@ -179,14 +180,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center gap-2 animate-fade-in-up">
-              <div className="bg-gradient-to-br from-orange-600 to-yellow-600 p-1 rounded-lg shadow-sm">
-                <Hotel className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl sm:text-2xl font-bold text-gray-800">
-                Grand Hotel
-              </span>
-            </div>
+            <TangMowLogo
+              className="animate-fade-in-up"
+              variant="compact"
+              showText={true}
+              textClassName="text-xl sm:text-2xl font-bold text-gray-800 hidden sm:block"
+              priority={true}
+            />
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8 animate-fade-in-up delay-200">
@@ -216,7 +216,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/booking"
-                className="bg-gradient-to-r from-orange-600 to-yellow-600 text-white px-6 py-2 rounded-full hover:from-orange-700 hover:to-yellow-700 transition-all duration-300 transform hover:scale-105 font-medium shadow-lg"
+                className="bg-gradient-to-r from-red-700 to-orange-600 text-white px-6 py-2 rounded-full hover:from-red-800 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 font-medium shadow-lg"
               >
                 Book Now
               </Link>
@@ -272,7 +272,7 @@ export default function HomePage() {
                 </Link>
                 <Link
                   href="/booking"
-                  className="block mx-3 mt-3 bg-gradient-to-r from-orange-600 to-yellow-600 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-yellow-700 transition-all duration-300 font-medium shadow-lg text-center"
+                  className="block mx-3 mt-3 bg-gradient-to-r from-red-700 to-orange-600 text-white px-4 py-2 rounded-full hover:from-red-800 hover:to-orange-700 transition-all duration-300 font-medium shadow-lg text-center"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Book Now
@@ -284,7 +284,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen lg:min-h-screen md:min-h-[90vh] sm:min-h-[85vh] bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center lg:justify-start overflow-hidden">
+      <section className="relative min-h-screen lg:min-h-screen md:min-h-[90vh] sm:min-h-[85vh] bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center lg:justify-start overflow-hidden">
         {/* Hero Background Images Carousel */}
         <div className="absolute inset-0 z-0">
           {heroImages.map((image, index) => (
@@ -419,7 +419,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={() => setShowGuestDropdown(!showGuestDropdown)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
                   >
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
@@ -468,7 +468,7 @@ export default function HomePage() {
                 <Button
                   type="submit"
                   disabled={isCheckingAvailability}
-                  className="w-full bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white py-3 sm:py-4 rounded-xl text-base sm:text-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 sm:py-4 rounded-xl text-base sm:text-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   {isCheckingAvailability ? (
                     <div className="flex items-center justify-center gap-2">
@@ -529,24 +529,24 @@ export default function HomePage() {
               </p>
               <ul className="space-y-3 text-gray-700 mb-8 text-left max-w-md mx-auto md:mx-0">
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-red-700 flex-shrink-0" />
                   Professional event planning services
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-red-700 flex-shrink-0" />
                   Custom catering menus available
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-red-700 flex-shrink-0" />
                   Advanced lighting and sound systems
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-red-700 flex-shrink-0" />
                   Dedicated event coordinator
                 </li>
               </ul>
               <div className="flex justify-center md:justify-start">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full transition-all duration-300">
+                <Button className="bg-red-700 hover:bg-red-800 text-white px-8 py-3 rounded-full transition-all duration-300">
                   Book Event Space
                 </Button>
               </div>
@@ -1131,12 +1131,11 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-10 text-center md:text-left">
             <div className="animate-fade-in-up">
-              <div className="flex items-center gap-2 mb-6 justify-center md:justify-start">
-                <div className="bg-gradient-to-br from-orange-600 to-yellow-600 p-2 rounded-xl shadow-lg">
-                  <Hotel className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-xl font-bold">Grand Hotel</span>
-              </div>
+              <TangMowLogo
+                variant="full"
+                showText={false}
+                className="mb-6 justify-center md:justify-start"
+              />
               <p className="text-gray-300 leading-relaxed max-w-sm mx-auto md:mx-0">
                 Experience luxury hospitality at its finest. From elegant
                 accommodations to exquisite dining and memorable events, we
@@ -1209,8 +1208,8 @@ export default function HomePage() {
 
           <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400 animate-fade-in-up delay-800">
             <p>
-              &copy; 2025 Grand Hotel. All rights reserved. Crafted for
-              exceptional hospitality experiences. �
+              &copy; 2025 Tang Mow. All rights reserved. Crafted for exceptional
+              hospitality experiences. �
             </p>
           </div>
         </div>

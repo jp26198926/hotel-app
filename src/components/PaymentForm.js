@@ -78,30 +78,30 @@ export default function PaymentForm({
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Booking Confirmation - Grand Hotel</title>
+        <title>Booking Confirmation - Tang Mow</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-          .header { text-align: center; border-bottom: 2px solid #f97316; padding-bottom: 20px; margin-bottom: 30px; }
-          .hotel-name { color: #f97316; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-          .booking-ref { background: #f97316; color: white; padding: 10px; border-radius: 8px; display: inline-block; font-weight: bold; }
+          .header { text-align: center; border-bottom: 2px solid #C63527; padding-bottom: 20px; margin-bottom: 30px; }
+          .hotel-name { color: #C63527; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+          .booking-ref { background: #C63527; color: white; padding: 10px; border-radius: 8px; display: inline-block; font-weight: bold; }
           .section { margin-bottom: 25px; }
-          .section-title { font-size: 18px; font-weight: bold; color: #f97316; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+          .section-title { font-size: 18px; font-weight: bold; color: #C63527; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
           .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
           .info-label { font-weight: 600; color: #666; }
           .info-value { font-weight: 500; color: #333; }
-          .total-box { background: #fff7ed; border: 2px solid #f97316; border-radius: 8px; padding: 15px; margin: 20px 0; }
-          .total-row { display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; color: #f97316; }
-          .payment-info { background: #dbeafe; border-radius: 8px; padding: 15px; margin: 20px 0; }
-          .payment-info h4 { color: #1e40af; margin-bottom: 10px; }
+          .total-box { background: #FFE4E1; border: 2px solid #C63527; border-radius: 8px; padding: 15px; margin: 20px 0; }
+          .total-row { display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; color: #C63527; }
+          .payment-info { background: #FFE4E1; border-radius: 8px; padding: 15px; margin: 20px 0; }
+          .payment-info h4 { color: #8B1538; margin-bottom: 10px; }
           .payment-info ul { margin: 10px 0; padding-left: 20px; }
-          .payment-info li { margin: 5px 0; color: #1e40af; }
+          .payment-info li { margin: 5px 0; color: #8B1538; }
           .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px; }
           @media print { .no-print { display: none; } }
         </style>
       </head>
       <body>
         <div class="header">
-          <div class="hotel-name">Grand Hotel</div>
+          <div class="hotel-name">Tang Mow</div>
           <p>Luxury Accommodation & Fine Dining</p>
           <div class="booking-ref">Booking Reference: ${
             bookingData.bookingReference || "N/A"
@@ -226,7 +226,7 @@ export default function PaymentForm({
         </div>
 
         <div class="footer">
-          <p>Thank you for choosing Grand Hotel. We look forward to your stay!</p>
+          <p>Thank you for choosing Tang Mow. We look forward to your stay!</p>
           <p>Hotel Address: 123 Luxury Avenue, City, State 12345 | Phone: (555) 123-4567</p>
           <p>Generated on: ${new Date().toLocaleDateString("en-US", {
             weekday: "long",
@@ -635,7 +635,7 @@ export default function PaymentForm({
                       <p>
                         <strong>Bank Transfer Details:</strong>
                       </p>
-                      <p>• Account Name: Grand Hotel Ltd.</p>
+                      <p>• Account Name: Tang Mow Ltd.</p>
                       <p>• Account Number: 1234-5678-9012</p>
                       <p>• Bank: Central Bank</p>
                       <p>

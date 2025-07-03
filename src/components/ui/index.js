@@ -13,12 +13,15 @@ export function Button({
     "inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
+    primary:
+      "bg-gradient-to-r from-red-700 to-orange-600 text-white hover:from-red-800 hover:to-orange-700 focus:ring-red-500 shadow-lg",
     secondary:
-      "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500",
+      "bg-gradient-to-r from-orange-500 to-orange-400 text-white hover:from-orange-600 hover:to-orange-500 focus:ring-orange-500 shadow-lg",
+    accent:
+      "bg-gradient-to-r from-orange-300 to-orange-200 text-red-800 hover:from-orange-400 hover:to-orange-300 focus:ring-orange-400 shadow-md",
     outline:
-      "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-blue-500",
-    ghost: "text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
+      "border-2 border-red-700 bg-white text-red-700 hover:bg-red-50 focus:ring-red-500",
+    ghost: "text-red-700 hover:bg-red-50 focus:ring-red-500",
     danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
     success: "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500",
   };
@@ -52,7 +55,7 @@ export function Input({ label, error, className, type = "text", ...props }) {
       <input
         type={type}
         className={cn(
-          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500",
           error && "border-red-300 focus:ring-red-500 focus:border-red-500",
           className
         )}
@@ -73,7 +76,7 @@ export function Select({ label, error, children, className, ...props }) {
       )}
       <select
         className={cn(
-          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500",
           error && "border-red-300 focus:ring-red-500 focus:border-red-500",
           className
         )}
@@ -102,11 +105,11 @@ export function Card({ children, className, ...props }) {
 
 export function Badge({ children, variant = "default", className, ...props }) {
   const variants = {
-    default: "bg-gray-100 text-gray-800",
+    default: "bg-red-100 text-red-800",
     success: "bg-green-100 text-green-800",
     warning: "bg-yellow-100 text-yellow-800",
     danger: "bg-red-100 text-red-800",
-    info: "bg-blue-100 text-blue-800",
+    info: "bg-orange-100 text-orange-800",
   };
 
   return (
@@ -192,7 +195,7 @@ export function LoadingSpinner({ size = "md", className }) {
   return (
     <div
       className={cn(
-        "animate-spin rounded-full border-2 border-gray-300 border-t-blue-600",
+        "animate-spin rounded-full border-2 border-gray-300 border-t-red-600",
         sizes[size],
         className
       )}
