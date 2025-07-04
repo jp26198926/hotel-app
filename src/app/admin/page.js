@@ -378,31 +378,17 @@ export default function AdminPage() {
               <div className="flex items-center space-x-4">
                 <div className="hidden md:flex items-center space-x-2">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
                       type="text"
                       placeholder="Search..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                      className="pl-14 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white w-64"
                     />
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Button
-                    onClick={saveSettings}
-                    disabled={isSaving}
-                    className="bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                  >
-                    {isSaving ? (
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Save className="h-4 w-4 mr-2" />
-                    )}
-                    {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-
                   <button className="p-2 rounded-lg text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors">
                     <Bell className="h-5 w-5" />
                   </button>
@@ -750,47 +736,65 @@ export default function AdminPage() {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Main Heading
+                          Main Title
                         </label>
                         <input
                           type="text"
-                          value={localHeroSettings.mainHeading}
+                          value={localHeroSettings.title || ""}
                           onChange={(e) =>
                             setLocalHeroSettings((prev) => ({
                               ...prev,
-                              mainHeading: e.target.value,
+                              title: e.target.value,
                             }))
                           }
                           className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
-                          placeholder="Enter main heading"
+                          placeholder="Enter main title"
                         />
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Subheading
+                          Subtitle
+                        </label>
+                        <input
+                          type="text"
+                          value={localHeroSettings.subtitle || ""}
+                          onChange={(e) =>
+                            setLocalHeroSettings((prev) => ({
+                              ...prev,
+                              subtitle: e.target.value,
+                            }))
+                          }
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          placeholder="Enter subtitle"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Description
                         </label>
                         <textarea
-                          value={localHeroSettings.subheading}
+                          value={localHeroSettings.description || ""}
                           onChange={(e) =>
                             setLocalHeroSettings((prev) => ({
                               ...prev,
-                              subheading: e.target.value,
+                              description: e.target.value,
                             }))
                           }
-                          rows={3}
+                          rows={4}
                           className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
-                          placeholder="Enter subheading"
+                          placeholder="Enter hero description"
                         />
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Call to Action Text
+                          Primary Call to Action
                         </label>
                         <input
                           type="text"
-                          value={localHeroSettings.ctaText}
+                          value={localHeroSettings.ctaText || ""}
                           onChange={(e) =>
                             setLocalHeroSettings((prev) => ({
                               ...prev,
@@ -798,7 +802,25 @@ export default function AdminPage() {
                             }))
                           }
                           className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
-                          placeholder="Enter CTA text"
+                          placeholder="Enter primary CTA text"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Secondary Call to Action
+                        </label>
+                        <input
+                          type="text"
+                          value={localHeroSettings.ctaSecondaryText || ""}
+                          onChange={(e) =>
+                            setLocalHeroSettings((prev) => ({
+                              ...prev,
+                              ctaSecondaryText: e.target.value,
+                            }))
+                          }
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          placeholder="Enter secondary CTA text"
                         />
                       </div>
                     </div>
