@@ -92,10 +92,10 @@ export default function GalleryPage() {
       id: index,
       file,
       preview: URL.createObjectURL(file),
-      title: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
+      title: file.name.replace(/\.[^/.]+$/, "").substring(0, 100), // Remove extension and limit to 100 chars
       description: "",
       category: "hotel-exterior",
-      altText: file.name,
+      altText: file.name.substring(0, 200), // Limit to 200 chars
       tags: [],
       isFeatured: false,
       isPublic: true,
@@ -147,6 +147,11 @@ export default function GalleryPage() {
           const galleryData = {
             ...fileData,
             imageUrl: uploadData.fileUrl,
+            thumbnailUrl: uploadData.fileUrl, // Use same URL for thumbnail
+            mimeType:
+              fileData.file.type === "image/jpg"
+                ? "image/jpeg"
+                : fileData.file.type, // Normalize MIME type
             file: undefined, // Remove file object
             preview: undefined, // Remove preview URL
           };
@@ -160,6 +165,7 @@ export default function GalleryPage() {
           });
 
           const saveData = await saveResponse.json();
+
           if (!saveData.success) {
             throw new Error(saveData.error || "Failed to save gallery item");
           }
@@ -288,7 +294,7 @@ export default function GalleryPage() {
               <option value="hotel-interior">Hotel Interior</option>
               <option value="rooms">Rooms</option>
               <option value="restaurant">Restaurant</option>
-              <option value="facilities">Facilities</option>
+              <option value="amenities">Amenities</option>
               <option value="events">Events</option>
               <option value="other">Other</option>
             </select>
@@ -527,7 +533,7 @@ export default function GalleryPage() {
                                 <option value="restaurant">Restaurant</option>
                                 <option value="amenities">Amenities</option>
                                 <option value="events">Events</option>
-                                <option value="location">Location</option>
+                                <option value="other">Other</option>
                               </select>
                             </div>
 

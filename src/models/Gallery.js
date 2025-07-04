@@ -80,7 +80,7 @@ const GallerySchema = new mongoose.Schema(
     },
     mimeType: {
       type: String,
-      enum: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+      enum: ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"],
       required: [true, "MIME type is required"],
     },
     isHero: {
@@ -107,7 +107,7 @@ const GallerySchema = new mongoose.Schema(
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Uploader information is required"],
+      // Making this optional for now since we don't have auth implemented
     },
     approvedBy: {
       type: mongoose.Schema.Types.ObjectId,

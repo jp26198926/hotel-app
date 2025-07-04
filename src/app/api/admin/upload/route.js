@@ -72,6 +72,7 @@ export async function POST(request) {
     const fileUrl = `/uploads/${type}/${fileName}`;
 
     const response = {
+      success: true,
       message: `${type} uploaded successfully`,
       fileUrl: fileUrl,
     };
