@@ -118,6 +118,92 @@ export default function AdminPage() {
     }
   };
 
+  // Handle file upload
+  const handleFileUpload = async (file, type) => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
+
+    try {
+      const response = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const data = await response.json();
+      return data.fileUrl;
+    } catch (error) {
+      console.error("Upload error:", error);
+      throw error;
+    }
+  };
+
+  // Handle logo upload
+  const handleLogoUpload = async () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/jpeg,image/jpg,image/png,image/svg+xml";
+    fileInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      setUploadingLogo(true);
+      try {
+        const fileUrl = await handleFileUpload(file, "logo");
+        handleAppSettingsChange("logo", fileUrl);
+
+        // Auto-save the settings to database
+        const updatedSettings = { ...localAppSettings, logo: fileUrl };
+        await saveAppSettings(updatedSettings);
+
+        showSuccess("Logo uploaded and saved successfully!");
+      } catch (error) {
+        console.error("Logo upload error:", error);
+        showError("Failed to upload logo. Please try again.");
+      } finally {
+        setUploadingLogo(false);
+      }
+    };
+    fileInput.click();
+  };
+
+  // Handle favicon upload
+  const handleFaviconUpload = async () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept =
+      "image/png,image/x-icon,image/vnd.microsoft.icon,.ico,.png";
+    fileInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      setUploadingFavicon(true);
+      try {
+        const fileUrl = await handleFileUpload(file, "favicon");
+        handleAppSettingsChange("favicon", fileUrl);
+
+        // Auto-save the settings to database
+        const updatedSettings = { ...localAppSettings, favicon: fileUrl };
+        await saveAppSettings(updatedSettings);
+
+        showSuccess("Favicon uploaded and saved successfully!");
+      } catch (error) {
+        console.error("Favicon upload error:", error);
+        showError("Failed to upload favicon. Please try again.");
+      } finally {
+        setUploadingFavicon(false);
+      }
+    };
+    fileInput.click();
+  };
+
   // Remove background image
   const removeBackgroundImage = (index) => {
     setLocalHeroSettings((prev) => ({
@@ -577,9 +663,7 @@ export default function AdminPage() {
                             </div>
                           )}
                           <Button
-                            onClick={() => {
-                              /* TODO: Implement logo upload */
-                            }}
+                            onClick={handleLogoUpload}
                             disabled={uploadingLogo}
                             variant="outline"
                             className="upload-button"
@@ -611,9 +695,7 @@ export default function AdminPage() {
                             </div>
                           )}
                           <Button
-                            onClick={() => {
-                              /* TODO: Implement favicon upload */
-                            }}
+                            onClick={handleFaviconUpload}
                             disabled={uploadingFavicon}
                             variant="outline"
                             className="upload-button"
