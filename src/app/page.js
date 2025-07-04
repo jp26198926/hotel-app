@@ -434,7 +434,7 @@ export default function HomePage() {
             <div className="order-1 lg:order-2 flex items-center justify-center lg:justify-end">
               <form
                 onSubmit={handleBookingSubmit}
-                className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full mx-auto lg:mx-0 animate-fade-in-up delay-600"
+                className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full mx-auto lg:mx-0 animate-fade-in-up delay-600 booking-form"
               >
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6 text-center">
                   Book Your Stay
@@ -499,7 +499,7 @@ export default function HomePage() {
 
                   {/* Guest Dropdown */}
                   {showGuestDropdown && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 guest-dropdown">
                       <div className="p-4">
                         <div className="flex items-center justify-between">
                           <span className="text-gray-700">Adults</span>

@@ -146,6 +146,8 @@ select {
   border: 1px solid var(--dynamic-primary-color, #d4a574) !important;
   border-radius: 4px !important;
   transition: border-color 0.2s ease !important;
+  color: #1f2937 !important; /* Dark gray text for better readability */
+  background-color: #ffffff !important; /* White background */
 }
 
 /* More specific selectors to override Tailwind classes */
@@ -154,6 +156,8 @@ select {
 textarea.w-full,
 select.w-full {
   border-color: var(--dynamic-primary-color, #d4a574) !important;
+  color: #1f2937 !important; /* Dark gray text for better readability */
+  background-color: #ffffff !important; /* White background */
 }
 
 input[type="text"]:focus,
@@ -698,32 +702,29 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   z-index: 2;
 }
 
-/* Input placeholder styling */
+/* Placeholder text styling for better visibility */
 input::placeholder,
 textarea::placeholder {
-  color: #9ca3af; /* Gray placeholder color */
-  opacity: 1;
+  color: #6b7280 !important; /* Medium gray for placeholder text */
+  opacity: 1 !important;
 }
 
-/* Select input styling for better placeholder readability */
+/* Ensure text visibility in various states */
+input:not([type="submit"]):not([type="button"]):not([type="reset"]):not(
+    [type="checkbox"]
+  ):not([type="radio"]),
+textarea,
 select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 12px center;
-  background-repeat: no-repeat;
-  background-size: 16px;
-  appearance: none;
+  color: #1f2937 !important; /* Dark gray text */
+  background-color: #ffffff !important; /* White background */
 }
 
-select:invalid {
-  color: #9ca3af; /* Gray placeholder color when no option selected */
-}
-
-select:valid {
-  color: #374151; /* Normal text color when option selected */
-}
-
-select option:disabled {
-  color: #9ca3af; /* Gray color for disabled placeholder option */
+/* Override any text color classes that might be applied */
+.text-gray-900,
+.text-gray-800,
+.text-gray-700,
+.text-gray-600 {
+  color: #1f2937 !important; /* Ensure consistent dark text */
 }
 
 /* Focus styles for accessibility */
@@ -946,6 +947,8 @@ select option:disabled {
 .admin-page input[type="date"],
 .admin-page input[type="time"] {
   border-color: var(--dynamic-primary-color, #d4a574) !important;
+  color: #1f2937 !important; /* Dark gray text for better readability */
+  background-color: #ffffff !important; /* White background */
 }
 
 .admin-page textarea:focus,
@@ -963,10 +966,14 @@ select option:disabled {
 /* Fallback CSS for when Tailwind directives don't work */
 textarea {
   border-color: var(--dynamic-primary-color, #d4a574) !important;
+  color: #1f2937 !important; /* Dark gray text for better readability */
+  background-color: #ffffff !important; /* White background */
 }
 
 select {
   border-color: var(--dynamic-primary-color, #d4a574) !important;
+  color: #1f2937 !important; /* Dark gray text for better readability */
+  background-color: #ffffff !important; /* White background */
 }
 
 textarea:focus {
@@ -980,11 +987,15 @@ select:focus {
 }
 
 /* Additional comprehensive form styling to override all Tailwind classes */
+input[class*="border"],
 textarea[class*="border"],
 select[class*="border"] {
   border-color: var(--dynamic-primary-color, #d4a574) !important;
+  color: #1f2937 !important; /* Dark gray text for better readability */
+  background-color: #ffffff !important; /* White background */
 }
 
+input[class*="border"]:focus,
 textarea[class*="border"]:focus,
 select[class*="border"]:focus {
   border-color: var(--dynamic-primary-color, #d4a574) !important;
@@ -1005,4 +1016,125 @@ select[class*="border"]:focus {
 
 .focus\:border-transparent:focus {
   border-color: var(--dynamic-primary-color, #d4a574) !important;
+}
+
+/* DatePicker component styling enhancements */
+.date-picker-container {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%) !important;
+  box-shadow: 0 2px 8px rgba(212, 165, 116, 0.15) !important;
+}
+
+.date-picker-container:hover {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 4px 12px rgba(212, 165, 116, 0.25) !important;
+}
+
+.date-picker-container:focus-within {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2) !important;
+}
+
+/* Target DatePicker by specific class patterns */
+div[class*="border-gray-200"][class*="rounded-xl"] {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+}
+
+div[class*="border-gray-200"][class*="rounded-xl"]:hover {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 2px 8px rgba(212, 165, 116, 0.15) !important;
+}
+
+div[class*="focus-within:ring-red-500"] {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+}
+
+div[class*="focus-within:ring-red-500"]:focus-within {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2) !important;
+}
+
+/* Enhanced booking form date picker styling */
+.booking-form .date-picker-container,
+.booking-form div[class*="border-gray-200"] {
+  border: 2px solid var(--dynamic-primary-color, #d4a574) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%) !important;
+  box-shadow: 0 2px 8px rgba(212, 165, 116, 0.15) !important;
+  transition: all 0.3s ease !important;
+}
+
+.booking-form .date-picker-container:hover,
+.booking-form div[class*="border-gray-200"]:hover {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 4px 12px rgba(212, 165, 116, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.booking-form .date-picker-container:focus-within,
+.booking-form div[class*="border-gray-200"]:focus-within {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2) !important;
+}
+
+/* Clean DatePicker styling - simplified approach */
+.booking-form .date-picker-container,
+.date-picker-container {
+  border: 1px solid var(--dynamic-primary-color, #d4a574) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%) !important;
+  box-shadow: 0 1px 3px rgba(212, 165, 116, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.booking-form .date-picker-container:hover,
+.date-picker-container:hover {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 2px 6px rgba(212, 165, 116, 0.15) !important;
+}
+
+.booking-form .date-picker-container:focus-within,
+.date-picker-container:focus-within {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.2) !important;
+}
+
+/* Ensure inputs inside date pickers have no borders */
+.booking-form .date-picker-container input,
+.date-picker-container input[type="text"],
+.date-picker-container input[readonly] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.booking-form .date-picker-container input:focus,
+.date-picker-container input[type="text"]:focus,
+.date-picker-container input[readonly]:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Guest selector button styling - clean approach */
+.booking-form button[class*="bg-gray-50"] {
+  border: 1px solid var(--dynamic-primary-color, #d4a574) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%) !important;
+  box-shadow: 0 1px 3px rgba(212, 165, 116, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.booking-form button[class*="bg-gray-50"]:hover {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 2px 6px rgba(212, 165, 116, 0.15) !important;
+}
+
+.booking-form button[class*="bg-gray-50"]:focus {
+  border-color: var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.2) !important;
+}
+
+/* Guest dropdown styling - clean approach */
+.booking-form .guest-dropdown {
+  border: 1px solid var(--dynamic-primary-color, #d4a574) !important;
+  box-shadow: 0 2px 6px rgba(212, 165, 116, 0.15) !important;
 }

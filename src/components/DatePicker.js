@@ -259,7 +259,7 @@ export default function DatePicker({
 
       <div
         onClick={handleInputClick}
-        className={`w-full border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-red-500 focus-within:border-transparent transition-all duration-200 cursor-pointer bg-gray-50 flex items-center justify-between hover:border-red-300 hover:shadow-md ${
+        className={`w-full border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-red-500 focus-within:border-transparent transition-all duration-200 cursor-pointer bg-gray-50 flex items-center justify-between hover:border-red-300 hover:shadow-md date-picker-container ${
           disabled ? "opacity-50 cursor-not-allowed" : ""
         } ${sizeClasses[size]}`}
       >
