@@ -650,37 +650,15 @@ export default function RoomTypesPage() {
 
   return (
     <AdminLayout>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">
-                Room Types
-              </h1>
-              <p className="text-sm text-gray-600">
-                Manage hotel room types and configurations
-              </p>
-            </div>
-            <button
-              onClick={() => openModal()}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Add Room Type
-            </button>
-          </div>
-        </div>
-
+      <div className="bg-white rounded-xl shadow-sm">
         {/* Filters */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search room types..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -694,6 +672,13 @@ export default function RoomTypesPage() {
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
+            <button
+              onClick={() => openModal()}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Room Type
+            </button>
           </div>
         </div>
 
