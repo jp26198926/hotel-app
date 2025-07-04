@@ -61,6 +61,10 @@ export default function HomePage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageLoadStates, setImageLoadStates] = useState({});
 
+  // State for event venues
+  const [eventVenues, setEventVenues] = useState([]);
+  const [isLoadingVenues, setIsLoadingVenues] = useState(true);
+
   // Ref for guest dropdown and mobile menu
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -126,6 +130,29 @@ export default function HomePage() {
       document.title = `${appSettings.siteName} - Premium Hotel Experience`;
     }
   }, [appSettings.siteName]);
+
+  // Fetch event venues from database
+  useEffect(() => {
+    const fetchEventVenues = async () => {
+      try {
+        setIsLoadingVenues(true);
+        const response = await fetch("/api/event-venues");
+        const data = await response.json();
+
+        if (data.success) {
+          setEventVenues(data.data);
+        } else {
+          console.error("Failed to fetch event venues:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching event venues:", error);
+      } finally {
+        setIsLoadingVenues(false);
+      }
+    };
+
+    fetchEventVenues();
+  }, []);
 
   // Handle form submission
   const handleBookingSubmit = async (e) => {
@@ -563,115 +590,109 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* Grand Ballroom */}
-            <div className="animate-fade-in-up">
-              <div className="relative h-80 rounded-2xl overflow-hidden shadow-2xl group">
-                <Image
-                  src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2098&q=80"
-                  alt="Grand Ballroom"
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                <div className="absolute bottom-6 left-6 text-white">
-                  <h3 className="text-2xl font-bold mb-2">Grand Ballroom</h3>
-                  <p className="text-white/90">Capacity: 300 guests</p>
-                </div>
-              </div>
+          {isLoadingVenues ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-700 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading event venues...</p>
             </div>
+          ) : eventVenues.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              {eventVenues.map((venue, index) => {
+                const isEven = index % 2 === 0;
+                const delay = index * 200;
 
-            <div className="animate-fade-in-up delay-200 text-center md:text-left">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Perfect for Grand Celebrations
-              </h3>
-              <p className="text-gray-700 mb-6 leading-relaxed">
-                Our Grand Ballroom features crystal chandeliers, elegant décor,
-                and state-of-the-art audio-visual equipment. Ideal for weddings,
-                corporate events, and milestone celebrations.
+                return (
+                  <div
+                    key={venue._id}
+                    className={`contents ${
+                      isEven ? "" : "md:flex-row-reverse"
+                    }`}
+                  >
+                    {/* Image */}
+                    <div
+                      className={`animate-fade-in-up ${
+                        isEven ? "" : "md:order-2"
+                      }`}
+                      style={{ animationDelay: `${delay}ms` }}
+                    >
+                      <div className="relative h-80 rounded-2xl overflow-hidden shadow-2xl group">
+                        <Image
+                          src={venue.imageUrl}
+                          alt={venue.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        <div className="absolute bottom-6 left-6 text-white">
+                          <h3 className="text-2xl font-bold mb-2">
+                            {venue.name}
+                          </h3>
+                          <p className="text-white/90">
+                            Capacity: {venue.capacity}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div
+                      className={`animate-fade-in-up delay-200 text-center md:text-left ${
+                        isEven ? "" : "md:order-1"
+                      }`}
+                      style={{ animationDelay: `${delay + 200}ms` }}
+                    >
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                        {venue.subtitle}
+                      </h3>
+                      <p className="text-gray-700 mb-6 leading-relaxed">
+                        {venue.description}
+                      </p>
+                      <ul className="space-y-3 text-gray-700 mb-8 text-left max-w-md mx-auto md:mx-0">
+                        {venue.features.map((feature, featureIndex) => (
+                          <li
+                            key={featureIndex}
+                            className="flex items-center gap-3"
+                          >
+                            <CheckCircle
+                              className={`h-5 w-5 flex-shrink-0 ${
+                                venue.buttonColor === "red"
+                                  ? "text-red-700"
+                                  : venue.buttonColor === "orange"
+                                  ? "text-orange-500"
+                                  : "text-red-700"
+                              }`}
+                            />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="flex justify-center md:justify-start">
+                        <Link href="/events">
+                          <Button
+                            className={`${
+                              venue.buttonColor === "red"
+                                ? "bg-red-700 hover:bg-red-800"
+                                : venue.buttonColor === "orange"
+                                ? "bg-orange-500 hover:bg-orange-600"
+                                : "bg-red-700 hover:bg-red-800"
+                            } text-white px-8 py-3 rounded-full transition-all duration-300`}
+                          >
+                            {venue.buttonText}
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600">
+                No event venues available at the moment.
               </p>
-              <ul className="space-y-3 text-gray-700 mb-8 text-left max-w-md mx-auto md:mx-0">
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-red-700 flex-shrink-0" />
-                  Professional event planning services
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-red-700 flex-shrink-0" />
-                  Custom catering menus available
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-red-700 flex-shrink-0" />
-                  Advanced lighting and sound systems
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-red-700 flex-shrink-0" />
-                  Dedicated event coordinator
-                </li>
-              </ul>
-              <div className="flex justify-center md:justify-start">
-                <Link href="/events">
-                  <Button className="bg-red-700 hover:bg-red-800 text-white px-8 py-3 rounded-full transition-all duration-300">
-                    Book Event Space
-                  </Button>
-                </Link>
-              </div>
             </div>
-
-            {/* Conference Room */}
-            <div className="animate-fade-in-up delay-400 text-center md:text-left md:order-1">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Modern Conference Facilities
-              </h3>
-              <p className="text-gray-700 mb-6 leading-relaxed">
-                Our conference rooms are designed for productivity and comfort,
-                featuring the latest technology and flexible layouts for
-                meetings, seminars, and corporate retreats.
-              </p>
-              <ul className="space-y-3 text-gray-700 mb-8 text-left max-w-md mx-auto md:mx-0">
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                  High-speed Wi-Fi and video conferencing
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                  Flexible seating arrangements
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                  Presentation equipment included
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                  Coffee break and catering services
-                </li>
-              </ul>
-              <div className="flex justify-center md:justify-start">
-                <Link href="/events">
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full transition-all duration-300">
-                    Reserve Conference Room
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            <div className="animate-fade-in-up delay-600 md:order-2">
-              <div className="relative h-80 rounded-2xl overflow-hidden shadow-2xl group">
-                <Image
-                  src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
-                  alt="Modern Conference Room"
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                <div className="absolute bottom-6 left-6 text-white">
-                  <h3 className="text-2xl font-bold mb-2">
-                    Executive Conference Room
-                  </h3>
-                  <p className="text-white/90">Capacity: 50 guests</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
