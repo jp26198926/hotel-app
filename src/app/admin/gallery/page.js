@@ -4,9 +4,7 @@ import { useState, useEffect } from "react";
 import {
   Plus,
   Trash2,
-  Edit,
   Upload,
-  Save,
   RefreshCw,
   Filter,
   Grid,
@@ -25,23 +23,13 @@ export default function GalleryPage() {
   // Gallery state
   const [galleryItems, setGalleryItems] = useState([]);
   const [loadingGallery, setLoadingGallery] = useState(false);
-  const [galleryFormData, setGalleryFormData] = useState({
-    title: "",
-    description: "",
-    category: "hotel-exterior",
-    altText: "",
-    tags: [],
-    location: "",
-    photographer: "",
-    dateTaken: "",
-    isFeatured: false,
-    isPublic: true,
-    displayOrder: 0,
-    imageUrl: "",
-  });
-  const [uploadingGallery, setUploadingGallery] = useState(false);
   const [galleryFilter, setGalleryFilter] = useState("all");
-  const [editingGalleryItem, setEditingGalleryItem] = useState(null);
+
+  // Modal state
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState({});
+  const [uploadingMultiple, setUploadingMultiple] = useState(false);
 
   // Gallery functions
   const fetchGalleryItems = async () => {
@@ -60,96 +48,6 @@ export default function GalleryPage() {
     } finally {
       setLoadingGallery(false);
     }
-  };
-
-  const handleGalleryUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploadingGallery(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("type", "gallery");
-
-      const response = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setGalleryFormData((prev) => ({
-          ...prev,
-          imageUrl: data.fileUrl,
-        }));
-        showSuccess("Image uploaded successfully!");
-      } else {
-        showError(data.error || "Failed to upload image");
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      showError("Error uploading image");
-    } finally {
-      setUploadingGallery(false);
-    }
-  };
-
-  const handleGallerySubmit = async (e) => {
-    e.preventDefault();
-    if (
-      !galleryFormData.imageUrl ||
-      !galleryFormData.title ||
-      !galleryFormData.altText
-    ) {
-      showError("Please fill in all required fields");
-      return;
-    }
-
-    setLoadingGallery(true);
-    try {
-      const method = editingGalleryItem ? "PUT" : "POST";
-      const body = editingGalleryItem
-        ? { ...galleryFormData, id: editingGalleryItem._id }
-        : galleryFormData;
-
-      const response = await fetch("/api/admin/gallery", {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        showSuccess(
-          `Gallery item ${
-            editingGalleryItem ? "updated" : "created"
-          } successfully!`
-        );
-        fetchGalleryItems();
-        resetGalleryForm();
-      } else {
-        showError(
-          data.error ||
-            `Failed to ${editingGalleryItem ? "update" : "create"} gallery item`
-        );
-      }
-    } catch (error) {
-      console.error("Error saving gallery item:", error);
-      showError("Error saving gallery item");
-    } finally {
-      setLoadingGallery(false);
-    }
-  };
-
-  const handleGalleryEdit = (item) => {
-    setEditingGalleryItem(item);
-    setGalleryFormData({
-      ...item,
-      tags: item.tags || [],
-    });
   };
 
   const handleGalleryDelete = async (id) => {
@@ -174,24 +72,6 @@ export default function GalleryPage() {
     }
   };
 
-  const resetGalleryForm = () => {
-    setGalleryFormData({
-      title: "",
-      description: "",
-      category: "hotel-exterior",
-      altText: "",
-      tags: [],
-      location: "",
-      photographer: "",
-      dateTaken: "",
-      isFeatured: false,
-      isPublic: true,
-      displayOrder: 0,
-      imageUrl: "",
-    });
-    setEditingGalleryItem(null);
-  };
-
   // Load gallery items on component mount
   useEffect(() => {
     fetchGalleryItems();
@@ -201,6 +81,157 @@ export default function GalleryPage() {
   const filteredItems = galleryItems.filter(
     (item) => galleryFilter === "all" || item.category === galleryFilter
   );
+
+  // Multiple file upload handler
+  const handleMultipleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedFiles(files);
+
+    // Create preview data for each file
+    const previews = files.map((file, index) => ({
+      id: index,
+      file,
+      preview: URL.createObjectURL(file),
+      title: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
+      description: "",
+      category: "hotel-exterior",
+      altText: file.name,
+      tags: [],
+      isFeatured: false,
+      isPublic: true,
+      displayOrder: 0,
+    }));
+    setSelectedFiles(previews);
+  };
+
+  // Upload multiple files
+  const handleMultipleUpload = async () => {
+    if (selectedFiles.length === 0) {
+      showError("Please select files to upload");
+      return;
+    }
+
+    setUploadingMultiple(true);
+    setUploadProgress({});
+
+    try {
+      const uploadPromises = selectedFiles.map(async (fileData, index) => {
+        const formData = new FormData();
+        formData.append("file", fileData.file);
+        formData.append("type", "gallery");
+
+        // Update progress
+        setUploadProgress((prev) => ({
+          ...prev,
+          [index]: { status: "uploading", progress: 0 },
+        }));
+
+        try {
+          const uploadResponse = await fetch("/api/admin/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const uploadData = await uploadResponse.json();
+          if (!uploadData.success) {
+            throw new Error(uploadData.error || "Upload failed");
+          }
+
+          // Update progress
+          setUploadProgress((prev) => ({
+            ...prev,
+            [index]: { status: "saving", progress: 50 },
+          }));
+
+          // Save to gallery
+          const galleryData = {
+            ...fileData,
+            imageUrl: uploadData.fileUrl,
+            file: undefined, // Remove file object
+            preview: undefined, // Remove preview URL
+          };
+
+          const saveResponse = await fetch("/api/admin/gallery", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(galleryData),
+          });
+
+          const saveData = await saveResponse.json();
+          if (!saveData.success) {
+            throw new Error(saveData.error || "Failed to save gallery item");
+          }
+
+          // Update progress
+          setUploadProgress((prev) => ({
+            ...prev,
+            [index]: { status: "complete", progress: 100 },
+          }));
+
+          return saveData;
+        } catch (error) {
+          setUploadProgress((prev) => ({
+            ...prev,
+            [index]: { status: "error", progress: 0, error: error.message },
+          }));
+          throw error;
+        }
+      });
+
+      const results = await Promise.allSettled(uploadPromises);
+      const successful = results.filter(
+        (result) => result.status === "fulfilled"
+      );
+      const failed = results.filter((result) => result.status === "rejected");
+
+      if (successful.length > 0) {
+        showSuccess(`Successfully uploaded ${successful.length} image(s)`);
+        await fetchGalleryItems(); // Refresh gallery
+      }
+
+      if (failed.length > 0) {
+        showError(`Failed to upload ${failed.length} image(s)`);
+      }
+
+      // Close modal if all successful
+      if (failed.length === 0) {
+        setIsUploadModalOpen(false);
+        setSelectedFiles([]);
+        setUploadProgress({});
+      }
+    } catch (error) {
+      console.error("Error in multiple upload:", error);
+      showError("Error uploading images");
+    } finally {
+      setUploadingMultiple(false);
+    }
+  };
+
+  // Update selected file data
+  const updateSelectedFileData = (index, field, value) => {
+    setSelectedFiles((prev) =>
+      prev.map((file, i) => (i === index ? { ...file, [field]: value } : file))
+    );
+  };
+
+  // Remove selected file
+  const removeSelectedFile = (index) => {
+    setSelectedFiles((prev) => {
+      const newFiles = prev.filter((_, i) => i !== index);
+      // Clean up preview URL
+      if (prev[index]?.preview) {
+        URL.revokeObjectURL(prev[index].preview);
+      }
+      return newFiles;
+    });
+    setUploadProgress((prev) => {
+      const newProgress = { ...prev };
+      delete newProgress[index];
+      return newProgress;
+    });
+  };
 
   return (
     <AdminLayout>
@@ -234,193 +265,14 @@ export default function GalleryPage() {
                 </button>
               </div>
               <Button
-                onClick={() => document.getElementById("galleryUpload").click()}
-                disabled={uploadingGallery}
+                onClick={() => setIsUploadModalOpen(true)}
                 className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white"
               >
-                {uploadingGallery ? (
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Plus className="h-4 w-4 mr-2" />
-                )}
+                <Plus className="h-4 w-4 mr-2" />
                 Add Image
               </Button>
             </div>
           </div>
-
-          {/* Gallery Upload Form */}
-          <form
-            onSubmit={handleGallerySubmit}
-            className="mb-6 p-4 border rounded-lg bg-gray-50"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image *
-                </label>
-                <input
-                  type="file"
-                  id="galleryUpload"
-                  accept="image/*"
-                  onChange={handleGalleryUpload}
-                  className="hidden"
-                />
-                <div className="flex items-center space-x-2">
-                  <Button
-                    type="button"
-                    onClick={() =>
-                      document.getElementById("galleryUpload").click()
-                    }
-                    disabled={uploadingGallery}
-                    className="bg-gray-200 hover:bg-gray-300 text-gray-700"
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
-                    Choose Image
-                  </Button>
-                  {galleryFormData.imageUrl && (
-                    <div className="flex items-center space-x-2">
-                      <Image
-                        src={galleryFormData.imageUrl}
-                        alt="Preview"
-                        width={40}
-                        height={40}
-                        className="w-10 h-10 object-cover rounded"
-                      />
-                      <span className="text-sm text-green-600">
-                        Image uploaded
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  value={galleryFormData.title}
-                  onChange={(e) =>
-                    setGalleryFormData((prev) => ({
-                      ...prev,
-                      title: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
-                <select
-                  value={galleryFormData.category}
-                  onChange={(e) =>
-                    setGalleryFormData((prev) => ({
-                      ...prev,
-                      category: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="hotel-exterior">Hotel Exterior</option>
-                  <option value="hotel-interior">Hotel Interior</option>
-                  <option value="rooms">Rooms</option>
-                  <option value="restaurant">Restaurant</option>
-                  <option value="facilities">Facilities</option>
-                  <option value="events">Events</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Alt Text *
-                </label>
-                <input
-                  type="text"
-                  value={galleryFormData.altText}
-                  onChange={(e) =>
-                    setGalleryFormData((prev) => ({
-                      ...prev,
-                      altText: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={galleryFormData.description}
-                  onChange={(e) =>
-                    setGalleryFormData((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="md:col-span-2 flex items-center space-x-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={galleryFormData.isFeatured}
-                    onChange={(e) =>
-                      setGalleryFormData((prev) => ({
-                        ...prev,
-                        isFeatured: e.target.checked,
-                      }))
-                    }
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Featured</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={galleryFormData.isPublic}
-                    onChange={(e) =>
-                      setGalleryFormData((prev) => ({
-                        ...prev,
-                        isPublic: e.target.checked,
-                      }))
-                    }
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Public</span>
-                </label>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3 mt-4">
-              {editingGalleryItem && (
-                <Button
-                  type="button"
-                  onClick={resetGalleryForm}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700"
-                >
-                  Cancel
-                </Button>
-              )}
-              <Button
-                type="submit"
-                disabled={loadingGallery || !galleryFormData.imageUrl}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-              >
-                {loadingGallery ? (
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4 mr-2" />
-                )}
-                {editingGalleryItem ? "Update" : "Add"} Image
-              </Button>
-            </div>
-          </form>
 
           {/* Gallery Filter */}
           <div className="flex items-center space-x-2 mb-4">
@@ -487,12 +339,6 @@ export default function GalleryPage() {
                       </h4>
                       <div className="flex items-center space-x-1">
                         <button
-                          onClick={() => handleGalleryEdit(item)}
-                          className="p-1 text-gray-400 hover:text-blue-500 transition-colors"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
                           onClick={() => handleGalleryDelete(item._id)}
                           className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                         >
@@ -538,9 +384,7 @@ export default function GalleryPage() {
               </p>
               <div className="mt-6">
                 <Button
-                  onClick={() =>
-                    document.getElementById("galleryUpload").click()
-                  }
+                  onClick={() => setIsUploadModalOpen(true)}
                   className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -567,6 +411,293 @@ export default function GalleryPage() {
             )}
         </div>
       </div>
+
+      {/* Multiple Upload Modal */}
+      {isUploadModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Upload Multiple Images
+                </h3>
+                <button
+                  onClick={() => {
+                    setIsUploadModalOpen(false);
+                    setSelectedFiles([]);
+                    setUploadProgress({});
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+              {/* File Selection */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Images
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleMultipleFileSelect}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-sm text-gray-500 mt-2">
+                  Select multiple images to upload at once
+                </p>
+              </div>
+
+              {/* Selected Files Preview */}
+              {selectedFiles.length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-medium text-gray-900">
+                    Selected Images ({selectedFiles.length})
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedFiles.map((fileData, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-lg p-4 bg-gray-50"
+                      >
+                        <div className="flex items-start space-x-4">
+                          {/* Image Preview */}
+                          <div className="relative w-20 h-20 flex-shrink-0">
+                            <Image
+                              src={fileData.preview}
+                              alt="Preview"
+                              fill
+                              className="object-cover rounded-md"
+                            />
+                            <button
+                              onClick={() => removeSelectedFile(index)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                          </div>
+
+                          {/* File Details */}
+                          <div className="flex-1 space-y-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Title
+                              </label>
+                              <input
+                                type="text"
+                                value={fileData.title}
+                                onChange={(e) =>
+                                  updateSelectedFileData(
+                                    index,
+                                    "title",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Category
+                              </label>
+                              <select
+                                value={fileData.category}
+                                onChange={(e) =>
+                                  updateSelectedFileData(
+                                    index,
+                                    "category",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              >
+                                <option value="hotel-exterior">
+                                  Hotel Exterior
+                                </option>
+                                <option value="hotel-interior">
+                                  Hotel Interior
+                                </option>
+                                <option value="rooms">Rooms</option>
+                                <option value="restaurant">Restaurant</option>
+                                <option value="amenities">Amenities</option>
+                                <option value="events">Events</option>
+                                <option value="location">Location</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Description
+                              </label>
+                              <textarea
+                                value={fileData.description}
+                                onChange={(e) =>
+                                  updateSelectedFileData(
+                                    index,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
+                                rows={2}
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              />
+                            </div>
+
+                            <div className="flex items-center space-x-4">
+                              <label className="flex items-center text-sm text-gray-700">
+                                <input
+                                  type="checkbox"
+                                  checked={fileData.isFeatured}
+                                  onChange={(e) =>
+                                    updateSelectedFileData(
+                                      index,
+                                      "isFeatured",
+                                      e.target.checked
+                                    )
+                                  }
+                                  className="mr-2"
+                                />
+                                Featured
+                              </label>
+                              <label className="flex items-center text-sm text-gray-700">
+                                <input
+                                  type="checkbox"
+                                  checked={fileData.isPublic}
+                                  onChange={(e) =>
+                                    updateSelectedFileData(
+                                      index,
+                                      "isPublic",
+                                      e.target.checked
+                                    )
+                                  }
+                                  className="mr-2"
+                                />
+                                Public
+                              </label>
+                            </div>
+
+                            {/* Upload Progress */}
+                            {uploadProgress[index] && (
+                              <div className="mt-2">
+                                <div className="flex items-center justify-between text-xs mb-1">
+                                  <span
+                                    className={`
+                                    ${
+                                      uploadProgress[index].status ===
+                                      "complete"
+                                        ? "text-green-600"
+                                        : ""
+                                    }
+                                    ${
+                                      uploadProgress[index].status === "error"
+                                        ? "text-red-600"
+                                        : ""
+                                    }
+                                    ${
+                                      uploadProgress[index].status ===
+                                        "uploading" ||
+                                      uploadProgress[index].status === "saving"
+                                        ? "text-blue-600"
+                                        : ""
+                                    }
+                                  `}
+                                  >
+                                    {uploadProgress[index].status ===
+                                      "uploading" && "Uploading..."}
+                                    {uploadProgress[index].status ===
+                                      "saving" && "Saving..."}
+                                    {uploadProgress[index].status ===
+                                      "complete" && "Complete"}
+                                    {uploadProgress[index].status === "error" &&
+                                      "Error"}
+                                  </span>
+                                  <span>{uploadProgress[index].progress}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-1">
+                                  <div
+                                    className={`h-1 rounded-full transition-all duration-300 ${
+                                      uploadProgress[index].status ===
+                                      "complete"
+                                        ? "bg-green-500"
+                                        : uploadProgress[index].status ===
+                                          "error"
+                                        ? "bg-red-500"
+                                        : "bg-blue-500"
+                                    }`}
+                                    style={{
+                                      width: `${uploadProgress[index].progress}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                                {uploadProgress[index].error && (
+                                  <p className="text-xs text-red-600 mt-1">
+                                    {uploadProgress[index].error}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-600">
+                  {selectedFiles.length > 0 && (
+                    <span>{selectedFiles.length} image(s) selected</span>
+                  )}
+                </div>
+                <div className="flex space-x-3">
+                  <Button
+                    onClick={() => {
+                      setIsUploadModalOpen(false);
+                      setSelectedFiles([]);
+                      setUploadProgress({});
+                    }}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700"
+                    disabled={uploadingMultiple}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleMultipleUpload}
+                    disabled={selectedFiles.length === 0 || uploadingMultiple}
+                    className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white"
+                  >
+                    {uploadingMultiple ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload{" "}
+                        {selectedFiles.length > 0
+                          ? `${selectedFiles.length} `
+                          : ""}
+                        Image{selectedFiles.length !== 1 ? "s" : ""}
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }
