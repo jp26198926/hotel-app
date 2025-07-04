@@ -46,6 +46,7 @@ export default function AdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingFavicon, setUploadingFavicon] = useState(false);
+  const [uploadingHeroImage, setUploadingHeroImage] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const [searchTerm, setSearchTerm] = useState("");
@@ -204,12 +205,63 @@ export default function AdminPage() {
     fileInput.click();
   };
 
+  // Handle background image upload
+  const handleBackgroundImageUpload = async () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/jpeg,image/jpg,image/png,image/webp";
+    fileInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      setUploadingHeroImage(true);
+      try {
+        const fileUrl = await handleFileUpload(file, "hero");
+
+        // Add the new image to the background images array
+        const updatedHeroSettings = {
+          ...localHeroSettings,
+          backgroundImages: [
+            ...(localHeroSettings.backgroundImages || []),
+            fileUrl,
+          ],
+        };
+
+        setLocalHeroSettings(updatedHeroSettings);
+
+        // Auto-save the settings to database
+        await saveHeroSettings(updatedHeroSettings);
+
+        showSuccess("Background image uploaded and saved successfully!");
+      } catch (error) {
+        console.error("Background image upload error:", error);
+        showError("Failed to upload background image. Please try again.");
+      } finally {
+        setUploadingHeroImage(false);
+      }
+    };
+    fileInput.click();
+  };
+
   // Remove background image
-  const removeBackgroundImage = (index) => {
-    setLocalHeroSettings((prev) => ({
-      ...prev,
-      backgroundImages: prev.backgroundImages.filter((_, i) => i !== index),
-    }));
+  const removeBackgroundImage = async (index) => {
+    const updatedHeroSettings = {
+      ...localHeroSettings,
+      backgroundImages: localHeroSettings.backgroundImages.filter(
+        (_, i) => i !== index
+      ),
+    };
+
+    setLocalHeroSettings(updatedHeroSettings);
+
+    try {
+      // Auto-save the settings to database
+      await saveHeroSettings(updatedHeroSettings);
+      showSuccess("Background image removed successfully!");
+    } catch (error) {
+      console.error("Remove background image error:", error);
+      showError("Failed to remove background image. Please try again.");
+    }
   };
 
   // Tab configuration
@@ -913,38 +965,67 @@ export default function AdminPage() {
                         Background Images
                       </h3>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        {localHeroSettings.backgroundImages?.map(
-                          (image, index) => (
-                            <div key={index} className="relative group">
-                              <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                                <Image
-                                  src={image}
-                                  alt={`Background ${index + 1}`}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                              <button
-                                onClick={() => removeBackgroundImage(index)}
-                                className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {localHeroSettings.backgroundImages?.length > 0 ? (
+                          localHeroSettings.backgroundImages.map(
+                            (image, index) => (
+                              <div
+                                key={index}
+                                className="relative group bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
                               >
-                                <X className="h-4 w-4" />
-                              </button>
-                            </div>
+                                <div className="aspect-video bg-gray-100 overflow-hidden">
+                                  <Image
+                                    src={image}
+                                    alt={`Background ${index + 1}`}
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                </div>
+                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200" />
+                                <button
+                                  onClick={() => removeBackgroundImage(index)}
+                                  className="absolute top-2 right-2 p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg"
+                                  title="Remove image"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                                <div className="absolute bottom-2 left-2 right-2">
+                                  <div className="bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    Background {index + 1}
+                                  </div>
+                                </div>
+                              </div>
+                            )
                           )
+                        ) : (
+                          <div className="col-span-full text-center py-8">
+                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                              <ImageIcon className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <p className="text-gray-500 text-sm">
+                              No background images uploaded yet
+                            </p>
+                            <p className="text-gray-400 text-xs mt-1">
+                              Upload images to display in the hero section
+                            </p>
+                          </div>
                         )}
                       </div>
 
                       <Button
-                        onClick={() => {
-                          /* TODO: Implement image upload */
-                        }}
+                        onClick={handleBackgroundImageUpload}
                         variant="outline"
                         className="w-full upload-button"
+                        disabled={uploadingHeroImage}
                       >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Background Image
+                        {uploadingHeroImage ? (
+                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Plus className="h-4 w-4 mr-2" />
+                        )}
+                        {uploadingHeroImage
+                          ? "Uploading..."
+                          : "Add Background Image"}
                       </Button>
                     </div>
                   </div>

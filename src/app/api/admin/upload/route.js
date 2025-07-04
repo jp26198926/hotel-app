@@ -12,7 +12,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    if (!type || (type !== "logo" && type !== "favicon")) {
+    if (!type || !["logo", "favicon", "hero"].includes(type)) {
       return NextResponse.json(
         { error: "Invalid upload type" },
         { status: 400 }
@@ -29,6 +29,7 @@ export async function POST(request) {
         "image/ico",
         "application/octet-stream",
       ],
+      hero: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
     };
 
     if (!allowedTypes[type].includes(file.type)) {
