@@ -24,6 +24,10 @@ const AdminSettingsSchema = new mongoose.Schema(
       default:
         "TangMow Plaza Town Centre, Wewak, East Sepik Province, Papua New Guinea",
     },
+    facebookLink: {
+      type: String,
+      default: "https://facebook.com/tangmowhotel",
+    },
     logo: {
       type: String,
       default: "/tang-mow-logo.svg",
@@ -31,6 +35,14 @@ const AdminSettingsSchema = new mongoose.Schema(
     favicon: {
       type: String,
       default: "/favicon.ico",
+    },
+    primaryColor: {
+      type: String,
+      default: "#dc2626", // red-600
+    },
+    secondaryColor: {
+      type: String,
+      default: "#ea580c", // orange-600
     },
 
     // Hero Settings

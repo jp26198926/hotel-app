@@ -526,15 +526,48 @@ export default function AdminPage() {
                         </label>
                         <input
                           type="tel"
-                          value={localAppSettings.phoneNumber}
+                          value={localAppSettings.contactPhone || ""}
                           onChange={(e) =>
                             handleAppSettingsChange(
-                              "phoneNumber",
+                              "contactPhone",
                               e.target.value
                             )
                           }
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
                           placeholder="Enter phone number"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Address
+                        </label>
+                        <textarea
+                          value={localAppSettings.address || ""}
+                          onChange={(e) =>
+                            handleAppSettingsChange("address", e.target.value)
+                          }
+                          rows={3}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          placeholder="Enter hotel address"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Facebook Link
+                        </label>
+                        <input
+                          type="url"
+                          value={localAppSettings.facebookLink || ""}
+                          onChange={(e) =>
+                            handleAppSettingsChange(
+                              "facebookLink",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          placeholder="https://facebook.com/yourpage"
                         />
                       </div>
                     </div>
@@ -622,7 +655,7 @@ export default function AdminPage() {
                         <div className="flex items-center space-x-3">
                           <input
                             type="color"
-                            value={localAppSettings.primaryColor}
+                            value={localAppSettings.primaryColor || "#dc2626"}
                             onChange={(e) =>
                               handleAppSettingsChange(
                                 "primaryColor",
@@ -633,7 +666,7 @@ export default function AdminPage() {
                           />
                           <input
                             type="text"
-                            value={localAppSettings.primaryColor}
+                            value={localAppSettings.primaryColor || "#dc2626"}
                             onChange={(e) =>
                               handleAppSettingsChange(
                                 "primaryColor",
@@ -653,7 +686,7 @@ export default function AdminPage() {
                         <div className="flex items-center space-x-3">
                           <input
                             type="color"
-                            value={localAppSettings.secondaryColor}
+                            value={localAppSettings.secondaryColor || "#ea580c"}
                             onChange={(e) =>
                               handleAppSettingsChange(
                                 "secondaryColor",
@@ -664,7 +697,7 @@ export default function AdminPage() {
                           />
                           <input
                             type="text"
-                            value={localAppSettings.secondaryColor}
+                            value={localAppSettings.secondaryColor || "#ea580c"}
                             onChange={(e) =>
                               handleAppSettingsChange(
                                 "secondaryColor",

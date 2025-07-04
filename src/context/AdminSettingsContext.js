@@ -22,8 +22,11 @@ export const AdminSettingsProvider = ({ children }) => {
     contactPhone: "+675 456 7890",
     address:
       "TangMow Plaza Town Centre, Wewak, East Sepik Province, Papua New Guinea",
+    facebookLink: "https://facebook.com/tangmowhotel",
     logo: "/tang-mow-logo.svg",
     favicon: "/favicon.ico",
+    primaryColor: "#dc2626",
+    secondaryColor: "#ea580c",
   });
 
   const [heroSettings, setHeroSettings] = useState({
@@ -59,8 +62,11 @@ export const AdminSettingsProvider = ({ children }) => {
               contactEmail: settings.contactEmail,
               contactPhone: settings.contactPhone,
               address: settings.address,
+              facebookLink: settings.facebookLink,
               logo: settings.logo,
               favicon: settings.favicon,
+              primaryColor: settings.primaryColor,
+              secondaryColor: settings.secondaryColor,
             });
 
             // Update hero settings
@@ -98,8 +104,11 @@ export const AdminSettingsProvider = ({ children }) => {
           contactEmail: newSettings.contactEmail,
           contactPhone: newSettings.contactPhone,
           address: newSettings.address,
+          facebookLink: newSettings.facebookLink,
           logo: newSettings.logo,
           favicon: newSettings.favicon,
+          primaryColor: newSettings.primaryColor,
+          secondaryColor: newSettings.secondaryColor,
         }),
       });
 
