@@ -272,10 +272,12 @@ export default function AdminPage() {
               </div>
             </div>
             <div className="ml-3">
-              <h1 className="text-lg font-semibold text-gray-900">
+              <h1 className="text-lg font-semibold text-gray-900 font-poppins">
                 Hotel Admin
               </h1>
-              <p className="text-sm text-gray-500">Management Portal</p>
+              <p className="text-sm text-gray-500 font-light">
+                Management Portal
+              </p>
             </div>
           </div>
           <button
@@ -300,7 +302,7 @@ export default function AdminPage() {
                   <div
                     className={`w-2 h-2 rounded-full ${category.color} mr-3`}
                   />
-                  <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
                     {category.label}
                   </h3>
                 </div>
@@ -325,8 +327,10 @@ export default function AdminPage() {
                       >
                         <Icon className="mr-3 h-4 w-4 flex-shrink-0" />
                         <div className="flex-1 text-left">
-                          <div className="font-medium">{tab.label}</div>
-                          <div className="text-xs text-gray-700 mt-0.5">
+                          <div className="font-medium font-poppins">
+                            {tab.label}
+                          </div>
+                          <div className="text-xs text-gray-700 mt-0.5 font-light">
                             {tab.description}
                           </div>
                         </div>
@@ -414,10 +418,10 @@ export default function AdminPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-gray-900 font-poppins tracking-tight">
                   {getCurrentTab()?.label}
                 </h1>
-                <p className="mt-2 text-gray-700">
+                <p className="mt-2 text-gray-700 font-light">
                   {getCurrentTab()?.description}
                 </p>
               </div>
@@ -454,10 +458,10 @@ export default function AdminPage() {
             {activeTab === "app-settings" && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-6 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-2xl font-semibold text-gray-900 font-poppins tracking-tight">
                     Application Settings
                   </h2>
-                  <p className="text-gray-600 mt-1">
+                  <p className="text-gray-600 mt-1 font-light">
                     Configure your hotel application settings
                   </p>
                 </div>
@@ -465,12 +469,12 @@ export default function AdminPage() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Basic Settings */}
                     <div className="space-y-6">
-                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
+                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2 font-poppins">
                         Basic Information
                       </h3>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Site Name
                         </label>
                         <input
@@ -479,13 +483,13 @@ export default function AdminPage() {
                           onChange={(e) =>
                             handleAppSettingsChange("siteName", e.target.value)
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter site name"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Site Description
                         </label>
                         <textarea
@@ -497,13 +501,13 @@ export default function AdminPage() {
                             )
                           }
                           rows={3}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter site description"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Contact Email
                         </label>
                         <input
@@ -515,13 +519,13 @@ export default function AdminPage() {
                               e.target.value
                             )
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter contact email"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Phone Number
                         </label>
                         <input
@@ -533,13 +537,13 @@ export default function AdminPage() {
                               e.target.value
                             )
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter phone number"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Address
                         </label>
                         <textarea
@@ -548,13 +552,13 @@ export default function AdminPage() {
                             handleAppSettingsChange("address", e.target.value)
                           }
                           rows={3}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter hotel address"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Facebook Link
                         </label>
                         <input
@@ -566,7 +570,7 @@ export default function AdminPage() {
                               e.target.value
                             )
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="https://facebook.com/yourpage"
                         />
                       </div>
@@ -574,7 +578,7 @@ export default function AdminPage() {
 
                     {/* Visual Settings */}
                     <div className="space-y-6">
-                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
+                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2 font-poppins">
                         Visual Settings
                       </h3>
 
@@ -649,7 +653,7 @@ export default function AdminPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Primary Color
                         </label>
                         <div className="flex items-center space-x-3">
@@ -673,14 +677,14 @@ export default function AdminPage() {
                                 e.target.value
                               )
                             }
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                             placeholder="#000000"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Secondary Color
                         </label>
                         <div className="flex items-center space-x-3">
@@ -704,7 +708,7 @@ export default function AdminPage() {
                                 e.target.value
                               )
                             }
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                             placeholder="#000000"
                           />
                         </div>

@@ -10,7 +10,7 @@ export function Button({
   ...props
 }) {
   const baseClasses =
-    "inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-poppins";
 
   const variants = {
     primary:
@@ -47,20 +47,20 @@ export function Input({ label, error, className, type = "text", ...props }) {
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 font-poppins">
           {label}
         </label>
       )}
       <input
         type={type}
         className={cn(
-          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 input-focus transition-colors",
+          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 input-focus transition-colors font-poppins",
           error && "border-red-300 focus:border-red-500 focus:ring-red-500",
           className
         )}
         {...props}
       />
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 font-poppins">{error}</p>}
     </div>
   );
 }
@@ -69,13 +69,13 @@ export function Select({ label, error, children, className, ...props }) {
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 font-poppins">
           {label}
         </label>
       )}
       <select
         className={cn(
-          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 input-focus transition-colors",
+          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 input-focus transition-colors font-poppins",
           error && "border-red-300 focus:border-red-500 focus:ring-red-500",
           className
         )}
@@ -83,7 +83,7 @@ export function Select({ label, error, children, className, ...props }) {
       >
         {children}
       </select>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 font-poppins">{error}</p>}
     </div>
   );
 }
@@ -114,7 +114,7 @@ export function Badge({ children, variant = "default", className, ...props }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium font-poppins",
         variants[variant],
         className
       )}
