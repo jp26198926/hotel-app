@@ -98,6 +98,15 @@ export default function AdminLayout({ children, title, description }) {
       href: "/admin/events",
     },
     {
+      id: "event-venues",
+      label: "Event Venues",
+      icon: MapPin,
+      category: "Events",
+      description: "Manage event venues and spaces",
+      color: "bg-red-400",
+      href: "/admin/event-venues",
+    },
+    {
       id: "gallery",
       label: "Gallery",
       icon: ImageIcon,
