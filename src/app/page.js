@@ -65,6 +65,10 @@ export default function HomePage() {
   const [eventVenues, setEventVenues] = useState([]);
   const [isLoadingVenues, setIsLoadingVenues] = useState(true);
 
+  // State for room types
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [isLoadingRoomTypes, setIsLoadingRoomTypes] = useState(true);
+
   // Ref for guest dropdown and mobile menu
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -153,6 +157,48 @@ export default function HomePage() {
 
     fetchEventVenues();
   }, []);
+
+  // Fetch room types from database
+  useEffect(() => {
+    const fetchRoomTypes = async () => {
+      try {
+        setIsLoadingRoomTypes(true);
+        const response = await fetch("/api/room-types");
+        const data = await response.json();
+
+        if (data.success) {
+          setRoomTypes(data.data);
+        } else {
+          console.error("Failed to fetch room types:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching room types:", error);
+      } finally {
+        setIsLoadingRoomTypes(false);
+      }
+    };
+
+    fetchRoomTypes();
+  }, []);
+
+  // Helper function to render room amenities
+  const renderRoomAmenities = (amenities) => {
+    if (!amenities || amenities.length === 0) return null;
+
+    return amenities
+      .slice(0, 3)
+      .map((amenity, index) => <p key={index}>• {amenity}</p>);
+  };
+
+  // Helper function to get primary room image
+  const getPrimaryRoomImage = (images) => {
+    if (!images || images.length === 0) {
+      return "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
+    }
+
+    const primaryImage = images.find((img) => img.isPrimary);
+    return primaryImage ? primaryImage.url : images[0].url;
+  };
 
   // Handle form submission
   const handleBookingSubmit = async (e) => {
@@ -726,205 +772,81 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Standard Room */}
-            <div className="group hover-lift animate-fade-in-up h-full">
-              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="Standard Hotel Room"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      Standard Room
-                    </h3>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 text-yellow-400 fill-current"
-                        />
-                      ))}
+            {isLoadingRoomTypes ? (
+              // Loading state
+              <div className="col-span-full text-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-800 mx-auto"></div>
+                <p className="text-gray-700 mt-2">Loading room types...</p>
+              </div>
+            ) : roomTypes.length === 0 ? (
+              // Empty state
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-700">
+                  No room types available at the moment.
+                </p>
+              </div>
+            ) : (
+              // Dynamic room types
+              roomTypes.map((roomType, index) => (
+                <div
+                  key={roomType._id}
+                  className={`group hover-lift animate-fade-in-up ${
+                    index > 0 ? `delay-${index * 200}` : ""
+                  } h-full`}
+                >
+                  <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+                    <div className="relative h-64 overflow-hidden">
+                      <Image
+                        src={getPrimaryRoomImage(roomType.images)}
+                        alt={roomType.name}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
+                    <div className="p-6 flex flex-col flex-grow">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xl font-semibold text-gray-800">
+                          {roomType.name}
+                        </h3>
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className="h-4 w-4 text-yellow-400 fill-current"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-3 flex-grow">
+                        {roomType.description}
+                      </p>
+                      <div className="text-sm text-gray-500 mb-4">
+                        <p>
+                          • {roomType.capacity?.maxGuests || 2} guests maximum
+                        </p>
+                        {renderRoomAmenities(roomType.amenities)}
+                      </div>
+                      <div className="flex items-center justify-between mt-auto mb-4">
+                        <span className="text-2xl font-bold text-gray-800">
+                          K{roomType.pricing?.basePrice || 0}
+                        </span>
+                        <span className="text-gray-500">/night</span>
+                      </div>
+                      <Link
+                        href={`/booking?roomType=${
+                          roomType.slug || roomType._id
+                        }`}
+                        className="w-full"
+                      >
+                        <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
+                          Book Now
+                        </Button>
+                      </Link>
                     </div>
                   </div>
-                  <p className="text-gray-600 mb-3 flex-grow">
-                    Comfortable room with modern amenities and complimentary
-                    breakfast
-                  </p>
-                  <div className="text-sm text-gray-500 mb-4">
-                    <p>• 2 guests maximum</p>
-                    <p>• Complimentary breakfast</p>
-                    <p>• Free fitness room access</p>
-                  </div>
-                  <div className="flex items-center justify-between mt-auto mb-4">
-                    <span className="text-2xl font-bold text-gray-800">
-                      K510
-                    </span>
-                    <span className="text-gray-500">/night</span>
-                  </div>
-                  <Link href="/booking?roomType=standard" className="w-full">
-                    <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
-                      Book Now
-                    </Button>
-                  </Link>
                 </div>
-              </div>
-            </div>
-
-            {/* Standard Room B */}
-            <div className="group hover-lift animate-fade-in-up delay-200 h-full">
-              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="Standard Room B"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      Standard Room B
-                    </h3>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-3 flex-grow">
-                    Enhanced standard room with premium amenities and
-                    complimentary breakfast
-                  </p>
-                  <div className="text-sm text-gray-500 mb-4">
-                    <p>• 2 guests maximum</p>
-                    <p>• Complimentary breakfast</p>
-                    <p>• Free fitness room access</p>
-                  </div>
-                  <div className="flex items-center justify-between mt-auto mb-4">
-                    <span className="text-2xl font-bold text-gray-800">
-                      K530
-                    </span>
-                    <span className="text-gray-500">/night</span>
-                  </div>
-                  <Link href="/booking?roomType=standard-b" className="w-full">
-                    <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
-                      Book Now
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Superior Twin Bed Room */}
-            <div className="group hover-lift animate-fade-in-up delay-400 h-full">
-              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80"
-                    alt="Superior Twin Bed Room"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      Superior Twin Bed Room
-                    </h3>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-3 flex-grow">
-                    Spacious twin bed room ideal for families or groups
-                  </p>
-                  <div className="text-sm text-gray-500 mb-4">
-                    <p>• 4 guests maximum</p>
-                    <p>• Complimentary breakfast</p>
-                    <p>• Free fitness room access</p>
-                  </div>
-                  <div className="flex items-center justify-between mt-auto mb-4">
-                    <span className="text-2xl font-bold text-gray-800">
-                      K695
-                    </span>
-                    <span className="text-gray-500">/night</span>
-                  </div>
-                  <Link
-                    href="/booking?roomType=superior-twin"
-                    className="w-full"
-                  >
-                    <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
-                      Book Now
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Family Deluxe Room */}
-            <div className="group hover-lift animate-fade-in-up delay-600 h-full">
-              <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="Family Deluxe Room"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      Family Deluxe Room
-                    </h3>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-3 flex-grow">
-                    Luxurious family suite with separate living area
-                  </p>
-                  <div className="text-sm text-gray-500 mb-4">
-                    <p>• 4 guests maximum</p>
-                    <p>• Complimentary breakfast</p>
-                    <p>• Free fitness room access</p>
-                  </div>
-                  <div className="flex items-center justify-between mt-auto mb-4">
-                    <span className="text-2xl font-bold text-gray-800">
-                      K999
-                    </span>
-                    <span className="text-gray-500">/night</span>
-                  </div>
-                  <Link
-                    href="/booking?roomType=family-deluxe"
-                    className="w-full"
-                  >
-                    <Button className="w-full bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-800 hover:to-orange-700 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105">
-                      Book Now
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
+              ))
+            )}
           </div>
 
           {/* Extra Bed Information */}
