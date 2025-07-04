@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -35,13 +35,17 @@ export default function HomePage() {
   const { appSettings, heroSettings, isLoading } = useAdminSettings();
 
   // Hero background images array - now dynamic from admin settings
-  const heroImages = heroSettings.backgroundImages || [
-    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80",
-    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-  ];
+  const heroImages = useMemo(
+    () =>
+      heroSettings.backgroundImages || [
+        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80",
+        "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      ],
+    [heroSettings.backgroundImages]
+  );
 
   // State for booking form
   const [checkInDate, setCheckInDate] = useState("");
@@ -55,6 +59,7 @@ export default function HomePage() {
 
   // State for hero image carousel
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageLoadStates, setImageLoadStates] = useState({});
 
   // Ref for guest dropdown and mobile menu
   const dropdownRef = useRef(null);
@@ -97,14 +102,23 @@ export default function HomePage() {
 
   // Hero image carousel effect
   useEffect(() => {
+    // Only start carousel when at least the first image is loaded
+    if (!imageLoadStates[heroImages[0]]) return;
+
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
-      );
+      setCurrentImageIndex((prevIndex) => {
+        const nextIndex =
+          prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1;
+        // Only advance if the next image is loaded
+        if (imageLoadStates[heroImages[nextIndex]]) {
+          return nextIndex;
+        }
+        return prevIndex;
+      });
     }, 20000); // Change image every 20 seconds
 
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, [heroImages.length, imageLoadStates, heroImages]);
 
   // Update document title dynamically
   useEffect(() => {
@@ -327,9 +341,11 @@ export default function HomePage() {
         <div className="absolute inset-0 z-0">
           {heroImages.map((image, index) => (
             <div
-              key={index}
+              key={`${image}-${index}`}
               className={`absolute inset-0 transition-opacity duration-2000 ease-in-out ${
-                index === currentImageIndex ? "opacity-100" : "opacity-0"
+                index === currentImageIndex && imageLoadStates[image]
+                  ? "opacity-100"
+                  : "opacity-0"
               }`}
             >
               <Image
@@ -338,6 +354,12 @@ export default function HomePage() {
                 fill
                 className="object-cover"
                 priority={index === 0}
+                onLoad={() => {
+                  setImageLoadStates((prev) => ({ ...prev, [image]: true }));
+                }}
+                onError={() => {
+                  setImageLoadStates((prev) => ({ ...prev, [image]: false }));
+                }}
               />
             </div>
           ))}

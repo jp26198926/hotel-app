@@ -38,7 +38,7 @@ export default function HeroSectionPage() {
     if (localHeroSettings.backgroundImages?.length > 0) {
       const initialLoadingState = {};
       localHeroSettings.backgroundImages.forEach((image) => {
-        initialLoadingState[image] = undefined; // undefined means not loaded yet
+        initialLoadingState[image] = false; // Start with false, set to true when loaded
       });
       setLoadingImages(initialLoadingState);
     }
@@ -156,7 +156,7 @@ export default function HeroSectionPage() {
 
   // Handle image loading states
   const handleImageLoad = (imageUrl) => {
-    setLoadingImages((prev) => ({ ...prev, [imageUrl]: false }));
+    setLoadingImages((prev) => ({ ...prev, [imageUrl]: true }));
   };
 
   const handleImageError = (imageUrl) => {
@@ -166,9 +166,7 @@ export default function HeroSectionPage() {
 
   // Add cache busting for uploaded images to ensure they display properly
   const getCachebustedUrl = (url) => {
-    if (url && url.startsWith("/uploads/")) {
-      return `${url}?t=${Date.now()}`;
-    }
+    // Remove aggressive cache busting that was causing flickering
     return url;
   };
 
@@ -309,7 +307,7 @@ export default function HeroSectionPage() {
                     >
                       <div
                         className={`aspect-video hero-image-container ${
-                          loadingImages[image] === false ? "loaded" : ""
+                          loadingImages[image] ? "loaded" : "loading"
                         }`}
                       >
                         <Image
@@ -318,10 +316,11 @@ export default function HeroSectionPage() {
                           width={300}
                           height={200}
                           className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 hero-image ${
-                            loadingImages[image] === false ? "loaded" : ""
+                            loadingImages[image] ? "loaded" : "loading"
                           }`}
                           onLoad={() => handleImageLoad(image)}
                           onError={() => handleImageError(image)}
+                          priority={index === 0}
                         />
                         {/* Click to preview indicator */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-30">

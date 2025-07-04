@@ -358,7 +358,7 @@ export default function AdminLayout({ children, title, description }) {
           </div>
 
           {/* Content Area */}
-          <div className="space-y-6">{children}</div>
+          <div className="space-y-6 admin-page">{children}</div>
         </div>
       </div>
     </div>
