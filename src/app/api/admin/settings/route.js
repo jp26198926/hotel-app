@@ -1,16 +1,16 @@
 import dbConnect from "@/lib/mongodb";
-import AdminSettings from "@/models/AdminSettings";
+import AppSetting from "@/models/AppSetting";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     await dbConnect();
 
-    let settings = await AdminSettings.findOne({ settingsType: "main" });
+    let settings = await AppSetting.findOne({ settingsType: "main" });
 
     // If no settings exist, create default settings
     if (!settings) {
-      settings = new AdminSettings({ settingsType: "main" });
+      settings = new AppSetting({ settingsType: "main" });
       await settings.save();
     }
 
@@ -34,18 +34,43 @@ export async function PUT(request) {
     const body = await request.json();
 
     // Find existing settings or create new one
-    let settings = await AdminSettings.findOne({ settingsType: "main" });
+    let settings = await AppSetting.findOne({ settingsType: "main" });
 
     if (!settings) {
-      settings = new AdminSettings({ settingsType: "main", ...body });
-    } else {
-      // Update existing settings
-      Object.keys(body).forEach((key) => {
-        if (body[key] !== undefined) {
-          settings[key] = body[key];
-        }
-      });
+      settings = new AppSetting({ settingsType: "main" });
     }
+
+    // Handle nested updates for AppSetting structure
+    if (body.siteName !== undefined) settings.siteName = body.siteName;
+    if (body.siteDescription !== undefined)
+      settings.siteDescription = body.siteDescription;
+    if (body.contactEmail !== undefined)
+      settings.contactInfo.email = body.contactEmail;
+    if (body.contactPhone !== undefined)
+      settings.contactInfo.phone = body.contactPhone;
+    if (body.address !== undefined) settings.contactInfo.address = body.address;
+    if (body.facebookLink !== undefined)
+      settings.socialMedia.facebook = body.facebookLink;
+    if (body.logo !== undefined) settings.branding.logo = body.logo;
+    if (body.favicon !== undefined) settings.branding.favicon = body.favicon;
+    if (body.primaryColor !== undefined)
+      settings.branding.primaryColor = body.primaryColor;
+    if (body.secondaryColor !== undefined)
+      settings.branding.secondaryColor = body.secondaryColor;
+
+    // Hero settings
+    if (body.heroTitle !== undefined)
+      settings.heroSettings.title = body.heroTitle;
+    if (body.heroSubtitle !== undefined)
+      settings.heroSettings.subtitle = body.heroSubtitle;
+    if (body.heroDescription !== undefined)
+      settings.heroSettings.description = body.heroDescription;
+    if (body.heroCtaText !== undefined)
+      settings.heroSettings.primaryCTA = body.heroCtaText;
+    if (body.heroCtaSecondaryText !== undefined)
+      settings.heroSettings.secondaryCTA = body.heroCtaSecondaryText;
+    if (body.heroBackgroundImages !== undefined)
+      settings.heroSettings.backgroundImages = body.heroBackgroundImages;
 
     await settings.save();
 

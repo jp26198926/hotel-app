@@ -14,14 +14,13 @@ export function Button({
 
   const variants = {
     primary:
-      "bg-gradient-to-r from-red-700 to-orange-600 text-white hover:from-red-800 hover:to-orange-700 focus:ring-red-500 shadow-lg",
+      "btn-primary text-white shadow-lg focus:ring-2 focus:ring-offset-2",
     secondary:
-      "bg-gradient-to-r from-orange-500 to-orange-400 text-white hover:from-orange-600 hover:to-orange-500 focus:ring-orange-500 shadow-lg",
+      "btn-secondary text-white shadow-lg focus:ring-2 focus:ring-offset-2",
     accent:
       "bg-gradient-to-r from-orange-300 to-orange-200 text-red-800 hover:from-orange-400 hover:to-orange-300 focus:ring-orange-400 shadow-md",
-    outline:
-      "border-2 border-red-700 bg-white text-red-700 hover:bg-red-50 focus:ring-red-500",
-    ghost: "text-red-700 hover:bg-red-50 focus:ring-red-500",
+    outline: "btn-outline focus:ring-2 focus:ring-offset-2",
+    ghost: "btn-ghost focus:ring-2 focus:ring-offset-2",
     danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
     success: "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500",
   };
@@ -55,8 +54,8 @@ export function Input({ label, error, className, type = "text", ...props }) {
       <input
         type={type}
         className={cn(
-          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500",
-          error && "border-red-300 focus:ring-red-500 focus:border-red-500",
+          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 input-focus transition-colors",
+          error && "border-red-300 focus:border-red-500 focus:ring-red-500",
           className
         )}
         {...props}
@@ -76,8 +75,8 @@ export function Select({ label, error, children, className, ...props }) {
       )}
       <select
         className={cn(
-          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500",
-          error && "border-red-300 focus:ring-red-500 focus:border-red-500",
+          "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 input-focus transition-colors",
+          error && "border-red-300 focus:border-red-500 focus:ring-red-500",
           className
         )}
         {...props}
@@ -105,11 +104,11 @@ export function Card({ children, className, ...props }) {
 
 export function Badge({ children, variant = "default", className, ...props }) {
   const variants = {
-    default: "bg-red-100 text-red-800",
+    default: "badge-primary",
     success: "bg-green-100 text-green-800",
     warning: "bg-yellow-100 text-yellow-800",
     danger: "bg-red-100 text-red-800",
-    info: "bg-orange-100 text-orange-800",
+    info: "badge-secondary",
   };
 
   return (

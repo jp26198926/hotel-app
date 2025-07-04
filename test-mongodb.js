@@ -1,10 +1,14 @@
 // Test MongoDB connection and admin settings
 import dotenv from "dotenv";
-import dbConnect from "./src/lib/mongodb.js";
-import AdminSettings from "./src/models/AdminSettings.js";
 
-// Load environment variables
+// Load environment variables first
 dotenv.config({ path: ".env.local" });
+
+// Set environment variable manually for testing
+process.env.MONGODB_URI = "mongodb://localhost:27017/hotelms";
+
+import dbConnect from "./src/lib/mongodb.js";
+import AppSetting from "./src/models/AppSetting.js";
 
 async function testMongoDB() {
   try {
@@ -15,10 +19,10 @@ async function testMongoDB() {
     // Test creating/updating settings
     console.log("Testing admin settings...");
 
-    let settings = await AdminSettings.findOne({ settingsType: "main" });
+    let settings = await AppSetting.findOne({ settingsType: "main" });
 
     if (!settings) {
-      settings = new AdminSettings({
+      settings = new AppSetting({
         settingsType: "main",
         siteName: "Tang Mow Hotel - Test",
         siteDescription: "Test MongoDB Integration",
@@ -32,8 +36,9 @@ async function testMongoDB() {
     console.log("Settings:", {
       siteName: settings.siteName,
       siteDescription: settings.siteDescription,
-      contactEmail: settings.contactEmail,
-      heroTitle: settings.heroTitle,
+      contactEmail: settings.contactInfo?.email,
+      heroTitle: settings.heroSettings?.title,
+      primaryColor: settings.branding?.primaryColor,
       createdAt: settings.createdAt,
     });
 

@@ -318,7 +318,7 @@ export default function AdminPage() {
                           w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200
                           ${
                             activeTab === tab.id
-                              ? "bg-gradient-to-r from-red-50 to-orange-50 text-red-700 border-l-4 border-red-600 shadow-sm"
+                              ? "tab-active shadow-sm"
                               : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                           }
                         `}
@@ -655,7 +655,7 @@ export default function AdminPage() {
                         <div className="flex items-center space-x-3">
                           <input
                             type="color"
-                            value={localAppSettings.primaryColor || "#dc2626"}
+                            value={localAppSettings.primaryColor || "#D4A574"}
                             onChange={(e) =>
                               handleAppSettingsChange(
                                 "primaryColor",
@@ -666,7 +666,7 @@ export default function AdminPage() {
                           />
                           <input
                             type="text"
-                            value={localAppSettings.primaryColor || "#dc2626"}
+                            value={localAppSettings.primaryColor || "#D4A574"}
                             onChange={(e) =>
                               handleAppSettingsChange(
                                 "primaryColor",
@@ -686,7 +686,7 @@ export default function AdminPage() {
                         <div className="flex items-center space-x-3">
                           <input
                             type="color"
-                            value={localAppSettings.secondaryColor || "#ea580c"}
+                            value={localAppSettings.secondaryColor || "#8B4513"}
                             onChange={(e) =>
                               handleAppSettingsChange(
                                 "secondaryColor",
@@ -697,7 +697,7 @@ export default function AdminPage() {
                           />
                           <input
                             type="text"
-                            value={localAppSettings.secondaryColor || "#ea580c"}
+                            value={localAppSettings.secondaryColor || "#8B4513"}
                             onChange={(e) =>
                               handleAppSettingsChange(
                                 "secondaryColor",

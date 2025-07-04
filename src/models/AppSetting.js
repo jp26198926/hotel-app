@@ -26,12 +26,12 @@ const AppSettingSchema = new mongoose.Schema(
       email: {
         type: String,
         required: [true, "Contact email is required"],
-        default: "tmhotel.reservation@tangmow.com",
+        default: "info@tangmowhotel.com",
       },
       phone: {
         type: String,
         required: [true, "Contact phone is required"],
-        default: "+675 7384 8240",
+        default: "+675 456 7890",
       },
       mobile: {
         type: String,
@@ -42,7 +42,7 @@ const AppSettingSchema = new mongoose.Schema(
         type: String,
         required: [true, "Address is required"],
         default:
-          "4th Floor TangMow Plaza, Town Centre, Wewak East Sepik Province",
+          "TangMow Plaza Town Centre, Wewak, East Sepik Province, Papua New Guinea",
       },
     },
     // Branding
@@ -57,13 +57,14 @@ const AppSettingSchema = new mongoose.Schema(
       },
       primaryColor: {
         type: String,
-        default: "#dc2626",
+        default: "#D4A574", // Warm golden/amber from hotel interior
       },
       secondaryColor: {
         type: String,
-        default: "#ea580c",
+        default: "#8B4513", // Rich brown/chocolate from hotel design
       },
     },
+
     // Hero Section Settings
     heroSettings: {
       title: {
@@ -98,7 +99,10 @@ const AppSettingSchema = new mongoose.Schema(
     },
     // Social Media
     socialMedia: {
-      facebook: String,
+      facebook: {
+        type: String,
+        default: "https://facebook.com/tangmowhotel",
+      },
       instagram: String,
       twitter: String,
       linkedin: String,
