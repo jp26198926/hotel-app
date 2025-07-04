@@ -31,6 +31,11 @@ export default function GalleryPage() {
   const [uploadProgress, setUploadProgress] = useState({});
   const [uploadingMultiple, setUploadingMultiple] = useState(false);
 
+  // Delete confirmation modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deletingItem, setDeletingItem] = useState(false);
+
   // Gallery functions
   const fetchGalleryItems = async () => {
     setLoadingGallery(true);
@@ -50,17 +55,28 @@ export default function GalleryPage() {
     }
   };
 
-  const handleGalleryDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this gallery item?")) return;
-    setLoadingGallery(true);
+  const handleGalleryDelete = async (item) => {
+    setItemToDelete(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+
+    setDeletingItem(true);
     try {
-      const response = await fetch(`/api/admin/gallery?id=${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/admin/gallery?id=${itemToDelete._id}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await response.json();
       if (data.success) {
         showSuccess("Gallery item deleted successfully!");
         fetchGalleryItems();
+        setIsDeleteModalOpen(false);
+        setItemToDelete(null);
       } else {
         showError(data.error || "Failed to delete gallery item");
       }
@@ -68,8 +84,13 @@ export default function GalleryPage() {
       console.error("Error deleting gallery item:", error);
       showError("Error deleting gallery item");
     } finally {
-      setLoadingGallery(false);
+      setDeletingItem(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setItemToDelete(null);
   };
 
   // Load gallery items on component mount
@@ -345,7 +366,7 @@ export default function GalleryPage() {
                       </h4>
                       <div className="flex items-center space-x-1">
                         <button
-                          onClick={() => handleGalleryDelete(item._id)}
+                          onClick={() => handleGalleryDelete(item)}
                           className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -699,6 +720,67 @@ export default function GalleryPage() {
                     )}
                   </Button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && itemToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Delete Gallery Item
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-gray-700">
+                  Are you sure you want to delete &ldquo;
+                  <span className="font-medium">{itemToDelete.title}</span>
+                  &rdquo;?
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  This will permanently remove the image from your gallery.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end space-x-3">
+                <Button
+                  onClick={cancelDelete}
+                  disabled={deletingItem}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmDelete}
+                  disabled={deletingItem}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {deletingItem ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           </div>
