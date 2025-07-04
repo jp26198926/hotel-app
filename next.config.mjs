@@ -9,6 +9,8 @@ const nextConfig = {
         pathname: "/**",
       },
     ],
+    // Allow unoptimized images for local uploads
+    unoptimized: process.env.NODE_ENV === "development",
   },
 };
 

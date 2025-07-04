@@ -47,9 +47,12 @@ export default function AdminPage() {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingFavicon, setUploadingFavicon] = useState(false);
   const [uploadingHeroImage, setUploadingHeroImage] = useState(false);
+  const [loadingImages, setLoadingImages] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Local state for form inputs
   const [localAppSettings, setLocalAppSettings] = useState(appSettings);
@@ -63,6 +66,17 @@ export default function AdminPage() {
   useEffect(() => {
     setLocalHeroSettings(heroSettings);
   }, [heroSettings]);
+
+  // Initialize loading states for existing images
+  useEffect(() => {
+    if (localHeroSettings.backgroundImages?.length > 0) {
+      const initialLoadingState = {};
+      localHeroSettings.backgroundImages.forEach((image) => {
+        initialLoadingState[image] = undefined; // undefined means not loaded yet
+      });
+      setLoadingImages(initialLoadingState);
+    }
+  }, [localHeroSettings.backgroundImages]);
 
   // Handle app settings change
   const handleAppSettingsChange = (key, value) => {
@@ -264,6 +278,29 @@ export default function AdminPage() {
     }
   };
 
+  // Handle image modal
+  const openImageModal = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setIsModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setSelectedImage(null);
+    setIsModalOpen(false);
+  };
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isModalOpen) {
+        closeImageModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isModalOpen]);
+
   // Tab configuration
   const tabs = [
     {
@@ -381,6 +418,24 @@ export default function AdminPage() {
   const getCurrentTab = () => tabs.find((tab) => tab.id === activeTab);
   const getCurrentCategory = () =>
     categories.find((cat) => cat.id === getCurrentTab()?.category);
+
+  // Handle image loading states
+  const handleImageLoad = (imageUrl) => {
+    setLoadingImages((prev) => ({ ...prev, [imageUrl]: false }));
+  };
+
+  const handleImageError = (imageUrl) => {
+    setLoadingImages((prev) => ({ ...prev, [imageUrl]: false }));
+    console.error("Image failed to load:", imageUrl);
+  };
+
+  // Add cache busting for uploaded images to ensure they display properly
+  const getCachebustedUrl = (url) => {
+    if (url && url.startsWith("/uploads/")) {
+      return `${url}?t=${Date.now()}`;
+    }
+    return url;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -971,20 +1026,41 @@ export default function AdminPage() {
                             (image, index) => (
                               <div
                                 key={index}
-                                className="relative group bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
+                                className="relative group bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+                                onClick={() => openImageModal(image)}
+                                title="Click to preview image"
                               >
-                                <div className="aspect-video bg-gray-100 overflow-hidden">
-                                  <Image
-                                    src={image}
+                                <div
+                                  className={`aspect-video hero-image-container ${
+                                    loadingImages[image] === false
+                                      ? "loaded"
+                                      : ""
+                                  }`}
+                                >
+                                  <img
+                                    src={getCachebustedUrl(image)}
                                     alt={`Background ${index + 1}`}
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                    className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 hero-image ${
+                                      loadingImages[image] === false
+                                        ? "loaded"
+                                        : ""
+                                    }`}
+                                    onLoad={() => handleImageLoad(image)}
+                                    onError={() => handleImageError(image)}
                                   />
+                                  {/* Click to preview indicator */}
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-30">
+                                    <div className="bg-white bg-opacity-90 rounded-full p-3">
+                                      <Eye className="h-6 w-6 text-gray-700" />
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200" />
                                 <button
-                                  onClick={() => removeBackgroundImage(index)}
-                                  className="absolute top-2 right-2 p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent modal from opening
+                                    removeBackgroundImage(index);
+                                  }}
+                                  className="absolute top-2 right-2 p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg z-10"
                                   title="Remove image"
                                 >
                                   <X className="h-4 w-4" />
@@ -1275,6 +1351,46 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+          onClick={closeImageModal}
+        >
+          <div
+            className="bg-white rounded-lg overflow-hidden shadow-lg max-w-4xl max-h-[90vh] w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative">
+              <img
+                src={getCachebustedUrl(selectedImage)}
+                alt="Selected Background Image"
+                className="modal-image w-full h-auto object-cover max-h-[80vh]"
+                onLoad={(e) => {
+                  e.target.classList.add("loaded");
+                }}
+                onError={(e) => {
+                  console.error("Modal image failed to load:", selectedImage);
+                  e.target.style.display = "none";
+                  const errorDiv = document.createElement("div");
+                  errorDiv.className =
+                    "w-full h-64 flex items-center justify-center bg-red-100 text-red-600";
+                  errorDiv.innerHTML = "Failed to load image";
+                  e.target.parentElement.appendChild(errorDiv);
+                }}
+              />
+              <button
+                onClick={closeImageModal}
+                className="absolute top-3 right-3 p-2 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg transition-colors duration-200"
+                title="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

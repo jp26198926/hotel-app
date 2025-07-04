@@ -800,3 +800,71 @@ select option:disabled {
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
+/* Image loading animations and styling */
+.hero-image {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hero-image.loaded {
+  opacity: 1;
+}
+
+.hero-image-container {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-image-container::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #d4a574;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 1;
+}
+
+.hero-image-container.loaded::before {
+  display: none;
+}
+
+/* Ensure images are properly sized */
+.hero-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal improvements */
+.modal-image {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-image.loaded {
+  opacity: 1;
+}
