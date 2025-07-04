@@ -12,7 +12,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    if (!type || !["logo", "favicon", "hero"].includes(type)) {
+    if (!type || !["logo", "favicon", "hero", "gallery"].includes(type)) {
       return NextResponse.json(
         { error: "Invalid upload type" },
         { status: 400 }
@@ -30,6 +30,7 @@ export async function POST(request) {
         "application/octet-stream",
       ],
       hero: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
+      gallery: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
     };
 
     if (!allowedTypes[type].includes(file.type)) {
@@ -70,10 +71,22 @@ export async function POST(request) {
     // Return the URL path for the uploaded file
     const fileUrl = `/uploads/${type}/${fileName}`;
 
-    return NextResponse.json({
+    const response = {
       message: `${type} uploaded successfully`,
       fileUrl: fileUrl,
-    });
+    };
+
+    // For gallery uploads, include additional metadata
+    if (type === "gallery") {
+      response.metadata = {
+        fileName: file.name,
+        fileSize: file.size,
+        mimeType: file.type,
+        uploadPath: fileName,
+      };
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(

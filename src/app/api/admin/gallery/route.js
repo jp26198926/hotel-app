@@ -26,7 +26,7 @@ export async function GET(request) {
       .populate("approvedBy", "name email")
       .sort({ displayOrder: 1, createdAt: -1 });
 
-    return NextResponse.json({ success: true, data: galleryItems });
+    return NextResponse.json({ success: true, items: galleryItems });
   } catch (error) {
     console.error("Error fetching gallery items:", error);
     return NextResponse.json(
@@ -46,7 +46,7 @@ export async function POST(request) {
     await galleryItem.save();
 
     return NextResponse.json(
-      { success: true, data: galleryItem },
+      { success: true, item: galleryItem },
       { status: 201 }
     );
   } catch (error) {
@@ -63,8 +63,8 @@ export async function PUT(request) {
   try {
     await connectToDatabase();
 
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const body = await request.json();
+    const { id, ...updateData } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -73,8 +73,7 @@ export async function PUT(request) {
       );
     }
 
-    const body = await request.json();
-    const galleryItem = await Gallery.findByIdAndUpdate(id, body, {
+    const galleryItem = await Gallery.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
     });
@@ -86,7 +85,7 @@ export async function PUT(request) {
       );
     }
 
-    return NextResponse.json({ success: true, data: galleryItem });
+    return NextResponse.json({ success: true, item: galleryItem });
   } catch (error) {
     console.error("Error updating gallery item:", error);
     return NextResponse.json(
