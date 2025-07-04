@@ -132,7 +132,7 @@ export default function AppSettingsPage() {
 
   return (
     <AdminLayout>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white rounded-xl shadow-sm">
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Basic Settings */}
