@@ -272,10 +272,10 @@ export default function AdminPage() {
               </div>
             </div>
             <div className="ml-3">
-              <h1 className="text-lg font-semibold text-gray-900 font-poppins">
-                Hotel Admin
+              <h1 className="text-sm font-semibold text-gray-900 font-poppins">
+                Admin
               </h1>
-              <p className="text-sm text-gray-500 font-light">
+              <p className="text-xs text-gray-500 font-light">
                 Management Portal
               </p>
             </div>
@@ -302,7 +302,7 @@ export default function AdminPage() {
                   <div
                     className={`w-2 h-2 rounded-full ${category.color} mr-3`}
                   />
-                  <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                  <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wide font-poppins">
                     {category.label}
                   </h3>
                 </div>
@@ -327,10 +327,10 @@ export default function AdminPage() {
                       >
                         <Icon className="mr-3 h-4 w-4 flex-shrink-0" />
                         <div className="flex-1 text-left">
-                          <div className="font-medium font-poppins">
+                          <div className="text-sm font-medium font-poppins">
                             {tab.label}
                           </div>
-                          <div className="text-xs text-gray-700 mt-0.5 font-light">
+                          <div className="text-xs text-gray-600 mt-0.5 font-light">
                             {tab.description}
                           </div>
                         </div>
@@ -384,7 +384,7 @@ export default function AdminPage() {
                       placeholder="Search..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                      className="pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
                     />
                   </div>
                 </div>
@@ -418,10 +418,10 @@ export default function AdminPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 font-poppins tracking-tight">
+                <h1 className="text-2xl font-semibold text-gray-900 font-poppins tracking-tight">
                   {getCurrentTab()?.label}
                 </h1>
-                <p className="mt-2 text-gray-700 font-light">
+                <p className="mt-1 text-sm text-gray-600 font-light">
                   {getCurrentTab()?.description}
                 </p>
               </div>
@@ -457,19 +457,11 @@ export default function AdminPage() {
             {/* App Settings Tab */}
             {activeTab === "app-settings" && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="p-6 border-b border-gray-200">
-                  <h2 className="text-2xl font-semibold text-gray-900 font-poppins tracking-tight">
-                    Application Settings
-                  </h2>
-                  <p className="text-gray-600 mt-1 font-light">
-                    Configure your hotel application settings
-                  </p>
-                </div>
                 <div className="p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Basic Settings */}
                     <div className="space-y-6">
-                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2 font-poppins">
+                      <h3 className="text-base font-medium text-gray-900 border-b pb-2 font-poppins">
                         Basic Information
                       </h3>
 
@@ -483,7 +475,7 @@ export default function AdminPage() {
                           onChange={(e) =>
                             handleAppSettingsChange("siteName", e.target.value)
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter site name"
                         />
                       </div>
@@ -501,7 +493,7 @@ export default function AdminPage() {
                             )
                           }
                           rows={3}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter site description"
                         />
                       </div>
@@ -519,7 +511,7 @@ export default function AdminPage() {
                               e.target.value
                             )
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter contact email"
                         />
                       </div>
@@ -537,7 +529,7 @@ export default function AdminPage() {
                               e.target.value
                             )
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter phone number"
                         />
                       </div>
@@ -552,7 +544,7 @@ export default function AdminPage() {
                             handleAppSettingsChange("address", e.target.value)
                           }
                           rows={3}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="Enter hotel address"
                         />
                       </div>
@@ -570,7 +562,7 @@ export default function AdminPage() {
                               e.target.value
                             )
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                           placeholder="https://facebook.com/yourpage"
                         />
                       </div>
@@ -578,7 +570,7 @@ export default function AdminPage() {
 
                     {/* Visual Settings */}
                     <div className="space-y-6">
-                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2 font-poppins">
+                      <h3 className="text-base font-medium text-gray-900 border-b pb-2 font-poppins">
                         Visual Settings
                       </h3>
 
@@ -604,7 +596,7 @@ export default function AdminPage() {
                             }}
                             disabled={uploadingLogo}
                             variant="outline"
-                            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                            className="upload-button"
                           >
                             {uploadingLogo ? (
                               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -638,7 +630,7 @@ export default function AdminPage() {
                             }}
                             disabled={uploadingFavicon}
                             variant="outline"
-                            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                            className="upload-button"
                           >
                             {uploadingFavicon ? (
                               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -666,7 +658,7 @@ export default function AdminPage() {
                                 e.target.value
                               )
                             }
-                            className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
+                            className="w-12 h-10 rounded-lg cursor-pointer"
                           />
                           <input
                             type="text"
@@ -677,7 +669,7 @@ export default function AdminPage() {
                                 e.target.value
                               )
                             }
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
+                            className="flex-1 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                             placeholder="#000000"
                           />
                         </div>
@@ -697,7 +689,7 @@ export default function AdminPage() {
                                 e.target.value
                               )
                             }
-                            className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
+                            className="w-12 h-10 rounded-lg cursor-pointer"
                           />
                           <input
                             type="text"
@@ -708,7 +700,7 @@ export default function AdminPage() {
                                 e.target.value
                               )
                             }
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
+                            className="flex-1 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white font-poppins"
                             placeholder="#000000"
                           />
                         </div>
@@ -769,7 +761,7 @@ export default function AdminPage() {
                               mainHeading: e.target.value,
                             }))
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
                           placeholder="Enter main heading"
                         />
                       </div>
@@ -787,7 +779,7 @@ export default function AdminPage() {
                             }))
                           }
                           rows={3}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
                           placeholder="Enter subheading"
                         />
                       </div>
@@ -805,7 +797,7 @@ export default function AdminPage() {
                               ctaText: e.target.value,
                             }))
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
+                          className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-gray-900 bg-white"
                           placeholder="Enter CTA text"
                         />
                       </div>
@@ -845,7 +837,7 @@ export default function AdminPage() {
                           /* TODO: Implement image upload */
                         }}
                         variant="outline"
-                        className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                        className="w-full upload-button"
                       >
                         <Plus className="h-4 w-4 mr-2" />
                         Add Background Image

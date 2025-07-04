@@ -107,6 +107,21 @@ export const AdminSettingsProvider = ({ children }) => {
     loadSettings();
   }, []);
 
+  // Update CSS variables when app settings change
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const root = document.documentElement;
+      root.style.setProperty(
+        "--dynamic-primary-color",
+        appSettings.primaryColor
+      );
+      root.style.setProperty(
+        "--dynamic-secondary-color",
+        appSettings.secondaryColor
+      );
+    }
+  }, [appSettings.primaryColor, appSettings.secondaryColor]);
+
   // Save settings to MongoDB
   const saveAppSettings = async (newSettings) => {
     try {
