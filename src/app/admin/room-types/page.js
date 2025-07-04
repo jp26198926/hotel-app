@@ -27,6 +27,10 @@ import {
   Mountain,
   Utensils,
   Image as ImageIcon,
+  Link,
+  Grid,
+  CloudUpload,
+  Check,
 } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -143,6 +147,15 @@ export default function RoomTypesPage() {
     caption: "",
   });
 
+  // Image management states
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageModalType, setImageModalType] = useState("url"); // "url", "gallery", "upload"
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+
   // Fetch room types
   const fetchRoomTypes = async () => {
     try {
@@ -163,8 +176,131 @@ export default function RoomTypesPage() {
     }
   };
 
+  // Fetch gallery images
+  const fetchGalleryImages = async () => {
+    try {
+      const response = await fetch("/api/admin/gallery");
+      const data = await response.json();
+
+      if (data.success) {
+        setGalleryImages(data.items || data.data || []);
+      } else {
+        toast.error("Failed to fetch gallery images");
+      }
+    } catch (error) {
+      console.error("Error fetching gallery images:", error);
+      toast.error("Error fetching gallery images");
+    }
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (file) => {
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      // Create a simple gallery item from the uploaded file
+      // For now, we'll create a base64 data URL since we don't have file upload infrastructure
+      const reader = new FileReader();
+
+      const uploadPromise = new Promise((resolve, reject) => {
+        reader.onload = async (e) => {
+          try {
+            const galleryItem = {
+              title: file.name.split(".")[0],
+              description: `Uploaded for room type`,
+              imageUrl: e.target.result, // This would be replaced with actual upload service
+              thumbnailUrl: e.target.result,
+              category: "rooms",
+              isPublic: false,
+              isActive: true,
+              displayOrder: 0,
+              metadata: {
+                filename: file.name,
+                size: file.size,
+                type: file.type,
+              },
+            };
+
+            const response = await fetch("/api/admin/gallery", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(galleryItem),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              // Add the uploaded image to the room type
+              const uploadedImage = {
+                url: data.item.imageUrl,
+                alt: galleryItem.title,
+                isPrimary: formData.images.length === 0,
+                caption: galleryItem.description,
+              };
+
+              // Update form data with new image
+              setFormData((prev) => {
+                const newFormData = {
+                  ...prev,
+                  images: [...prev.images, uploadedImage],
+                };
+                console.log("Updated formData with new image:", newFormData);
+                return newFormData;
+              });
+
+              resolve(data);
+            } else {
+              reject(new Error(data.error || "Failed to upload image"));
+            }
+          } catch (error) {
+            reject(error);
+          }
+        };
+
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
+      });
+
+      // Simulate upload progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        setUploadProgress(progress);
+        if (progress >= 90) {
+          clearInterval(interval);
+        }
+      }, 200);
+
+      // Wait for upload to complete
+      await uploadPromise;
+
+      // Success - show success message and close modal after a short delay
+      toast.success("Image uploaded and added to room type!");
+
+      // Small delay to ensure React has time to re-render the updated images
+      setTimeout(() => {
+        closeImageModal();
+        setUploadFile(null);
+      }, 300);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error(error.message || "Error uploading image");
+      setUploadFile(null);
+      // Don't close modal on error, let user try again or close manually
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
   useEffect(() => {
     fetchRoomTypes();
+    fetchGalleryImages();
   }, []);
 
   // Filter room types
@@ -365,6 +501,7 @@ export default function RoomTypesPage() {
     setShowModal(false);
     setEditingRoomType(null);
     setNewImage({ url: "", alt: "", isPrimary: false, caption: "" });
+    closeImageModal();
   };
 
   // Handle form submission
@@ -373,17 +510,22 @@ export default function RoomTypesPage() {
 
     try {
       const url = editingRoomType
-        ? `/api/admin/room-types?id=${editingRoomType._id}`
+        ? "/api/admin/room-types"
         : "/api/admin/room-types";
 
       const method = editingRoomType ? "PUT" : "POST";
+
+      // Include the ID in the request body for PUT requests
+      const requestBody = editingRoomType
+        ? { ...formData, id: editingRoomType._id }
+        : formData;
 
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -437,6 +579,55 @@ export default function RoomTypesPage() {
   const openDeleteModal = (roomType) => {
     setDeleteRoomType(roomType);
     setShowDeleteModal(true);
+  };
+
+  // Open image selection modal
+  const openImageModal = (type = "url") => {
+    setImageModalType(type);
+    setShowImageModal(true);
+    if (type === "gallery") {
+      fetchGalleryImages();
+    }
+  };
+
+  // Close image modal
+  const closeImageModal = () => {
+    setShowImageModal(false);
+    setSelectedGalleryImage(null);
+    setUploadFile(null);
+    setUploadProgress(0);
+  };
+
+  // Handle gallery image selection
+  const handleGalleryImageSelect = (image) => {
+    setSelectedGalleryImage(image);
+  };
+
+  // Add selected gallery image to room type
+  const addGalleryImageToRoom = () => {
+    if (selectedGalleryImage) {
+      const galleryImage = {
+        url: selectedGalleryImage.imageUrl,
+        alt: selectedGalleryImage.title || "Gallery image",
+        isPrimary: formData.images.length === 0,
+        caption: selectedGalleryImage.description || "",
+      };
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, galleryImage],
+      }));
+
+      closeImageModal();
+    }
+  };
+
+  // Handle file selection for upload
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setUploadFile(file);
+    }
   };
 
   // Auto-generate slug from name
@@ -1042,86 +1233,49 @@ export default function RoomTypesPage() {
                   <h4 className="text-sm font-medium text-gray-700 mb-3">
                     Add New Image
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Image URL
-                      </label>
-                      <input
-                        type="url"
-                        value={newImage.url}
-                        onChange={(e) =>
-                          setNewImage((prev) => ({
-                            ...prev,
-                            url: e.target.value,
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="https://example.com/image.jpg"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Alt Text
-                      </label>
-                      <input
-                        type="text"
-                        value={newImage.alt}
-                        onChange={(e) =>
-                          setNewImage((prev) => ({
-                            ...prev,
-                            alt: e.target.value,
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="Room description"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Caption (optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={newImage.caption}
-                        onChange={(e) =>
-                          setNewImage((prev) => ({
-                            ...prev,
-                            caption: e.target.value,
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="Image caption"
-                      />
-                    </div>
-                    <div className="flex items-center">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={newImage.isPrimary}
-                          onChange={(e) =>
-                            setNewImage((prev) => ({
-                              ...prev,
-                              isPrimary: e.target.checked,
-                            }))
-                          }
-                          className="mr-2"
-                        />
-                        <span className="text-sm text-gray-700">
-                          Set as primary image
-                        </span>
-                      </label>
-                    </div>
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        onClick={addImage}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-                      >
-                        <Upload className="w-4 h-4" />
-                        Add Image
-                      </button>
-                    </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                    <button
+                      type="button"
+                      onClick={() => openImageModal("url")}
+                      className="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                    >
+                      <Link className="w-8 h-8 text-gray-400" />
+                      <span className="text-sm font-medium text-gray-700">
+                        Add by URL
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Enter image URL
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => openImageModal("gallery")}
+                      className="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors"
+                    >
+                      <Grid className="w-8 h-8 text-gray-400" />
+                      <span className="text-sm font-medium text-gray-700">
+                        From Gallery
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Select existing image
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => openImageModal("upload")}
+                      className="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition-colors"
+                    >
+                      <CloudUpload className="w-8 h-8 text-gray-400" />
+                      <span className="text-sm font-medium text-gray-700">
+                        Upload New
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Upload from device
+                      </span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1177,6 +1331,263 @@ export default function RoomTypesPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Image Selection Modal */}
+      {showImageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {imageModalType === "url" && "Add Image by URL"}
+                  {imageModalType === "gallery" && "Select from Gallery"}
+                  {imageModalType === "upload" && "Upload New Image"}
+                </h2>
+                <button
+                  onClick={closeImageModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {imageModalType === "url" && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Image URL
+                    </label>
+                    <input
+                      type="url"
+                      value={newImage.url}
+                      onChange={(e) =>
+                        setNewImage((prev) => ({
+                          ...prev,
+                          url: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Alt Text
+                    </label>
+                    <input
+                      type="text"
+                      value={newImage.alt}
+                      onChange={(e) =>
+                        setNewImage((prev) => ({
+                          ...prev,
+                          alt: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      placeholder="Room description"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Caption (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newImage.caption}
+                      onChange={(e) =>
+                        setNewImage((prev) => ({
+                          ...prev,
+                          caption: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      placeholder="Image caption"
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={newImage.isPrimary}
+                        onChange={(e) =>
+                          setNewImage((prev) => ({
+                            ...prev,
+                            isPrimary: e.target.checked,
+                          }))
+                        }
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-700">
+                        Set as primary image
+                      </span>
+                    </label>
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={closeImageModal}
+                      className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={addImage}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Image
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {imageModalType === "gallery" && (
+                <div className="space-y-4">
+                  {galleryImages.length === 0 ? (
+                    <div className="text-center py-8">
+                      <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        No images in gallery
+                      </h3>
+                      <p className="text-gray-600">
+                        Upload some images to the gallery first.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {galleryImages.map((image) => (
+                          <div
+                            key={image._id}
+                            onClick={() => handleGalleryImageSelect(image)}
+                            className={`cursor-pointer border-2 rounded-lg overflow-hidden transition-all ${
+                              selectedGalleryImage?._id === image._id
+                                ? "border-blue-500 ring-2 ring-blue-200"
+                                : "border-gray-200 hover:border-gray-300"
+                            }`}
+                          >
+                            <div className="aspect-video relative">
+                              <Image
+                                src={image.imageUrl}
+                                alt={image.title}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                              />
+                              {selectedGalleryImage?._id === image._id && (
+                                <div className="absolute inset-0 bg-blue-500 bg-opacity-20 flex items-center justify-center">
+                                  <Check className="w-8 h-8 text-white" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="p-2">
+                              <p className="text-xs font-medium text-gray-900 truncate">
+                                {image.title}
+                              </p>
+                              {image.description && (
+                                <p className="text-xs text-gray-600 truncate">
+                                  {image.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex justify-end gap-3">
+                        <button
+                          onClick={closeImageModal}
+                          className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={addGalleryImageToRoom}
+                          disabled={!selectedGalleryImage}
+                          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Selected Image
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {imageModalType === "upload" && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Image File
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    />
+                  </div>
+
+                  {uploadFile && (
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        Selected File
+                      </h4>
+                      <div className="flex items-center gap-3">
+                        <ImageIcon className="w-8 h-8 text-gray-400" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {uploadFile.name}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            {(uploadFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {isUploading && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <CloudUpload className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">
+                          Uploading...
+                        </span>
+                      </div>
+                      <div className="w-full bg-blue-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={closeImageModal}
+                      className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                      disabled={isUploading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handleFileUpload(uploadFile)}
+                      disabled={!uploadFile || isUploading}
+                      className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <CloudUpload className="w-4 h-4" />
+                      {isUploading ? "Uploading..." : "Upload & Add"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
