@@ -142,6 +142,15 @@ export default function AdminLayout({ children, title, description }) {
       color: "bg-red-700",
       href: "/admin/staff",
     },
+    {
+      id: "maintenance",
+      label: "Maintenance",
+      icon: Settings,
+      category: "System",
+      description: "System maintenance and cleanup",
+      color: "bg-red-500",
+      href: "/admin/maintenance",
+    },
   ];
 
   // Categories for sidebar navigation
