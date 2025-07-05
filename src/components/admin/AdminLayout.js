@@ -185,7 +185,7 @@ export default function AdminLayout({ children, title, description }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50">
       {ToastComponent}
 
       {/* Mobile sidebar backdrop */}
@@ -199,7 +199,7 @@ export default function AdminLayout({ children, title, description }) {
       {/* Sidebar */}
       <div
         className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:z-auto lg:flex lg:flex-col
+        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:z-50 lg:flex lg:flex-col
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}
       >
@@ -283,7 +283,7 @@ export default function AdminLayout({ children, title, description }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
         {/* Header */}
         <div className="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8">
@@ -297,7 +297,7 @@ export default function AdminLayout({ children, title, description }) {
                 </button>
 
                 {/* Breadcrumb */}
-                <div className="ml-4 lg:ml-0 flex items-center space-x-2">
+                <div className="ml-4 lg:ml-0 hidden lg:flex items-center space-x-2">
                   <div className="flex items-center space-x-2 text-sm text-gray-700">
                     <Home className="h-4 w-4" />
                     <ChevronRight className="h-4 w-4" />

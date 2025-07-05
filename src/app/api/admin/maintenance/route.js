@@ -19,7 +19,7 @@ export async function GET() {
       totalFiles: 0,
       orphanedFiles: 0,
       cleanupResults: [],
-      errors: []
+      errors: [],
     };
 
     for (const dir of uploadDirs) {
@@ -29,8 +29,8 @@ export async function GET() {
       if (stat.isDirectory()) {
         try {
           const files = await fs.readdir(dirPath);
-          const uploadFiles = files.filter(file => !file.startsWith('.'));
-          
+          const uploadFiles = files.filter((file) => !file.startsWith("."));
+
           results.totalFiles += uploadFiles.length;
 
           // Check files against database
@@ -41,12 +41,12 @@ export async function GET() {
             directory: dir,
             totalFiles: uploadFiles.length,
             orphanedFiles: orphanedFiles.length,
-            files: orphanedFiles
+            files: orphanedFiles,
           });
         } catch (error) {
           results.errors.push({
             directory: dir,
-            error: error.message
+            error: error.message,
           });
         }
       }
@@ -54,7 +54,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      data: results
+      data: results,
     });
   } catch (error) {
     console.error("Error analyzing uploads:", error);
@@ -75,7 +75,7 @@ export async function POST(request) {
       const results = await cleanupOrphanedFiles(directory);
       return NextResponse.json({
         success: true,
-        data: results
+        data: results,
       });
     }
 
@@ -94,7 +94,7 @@ export async function POST(request) {
 
 async function findOrphanedFiles(directory, files) {
   const orphanedFiles = [];
-  
+
   for (const file of files) {
     const filePath = `/uploads/${directory}/${file}`;
     let isOrphaned = true;
@@ -102,56 +102,61 @@ async function findOrphanedFiles(directory, files) {
     try {
       // Check different collections based on directory
       switch (directory) {
-        case 'gallery':
-          const galleryItem = await Gallery.findOne({ 
+        case "gallery":
+          const galleryItem = await Gallery.findOne({
             $or: [
               { imageUrl: filePath },
               { imageUrl: file },
-              { imageUrl: { $regex: file, $options: 'i' } }
-            ]
+              { imageUrl: { $regex: file, $options: "i" } },
+            ],
           });
           if (galleryItem) isOrphaned = false;
           break;
 
-        case 'logo':
-        case 'favicon':
-        case 'hero':
+        case "logo":
+        case "favicon":
+        case "hero":
           const settings = await AppSetting.findOne({
             $or: [
-              { 'branding.logo': filePath },
-              { 'branding.favicon': filePath },
-              { 'branding.logo': file },
-              { 'branding.favicon': file },
-              { 'heroSettings.backgroundImages': filePath },
-              { 'heroSettings.backgroundImages': file },
-              { 'branding.logo': { $regex: file, $options: 'i' } },
-              { 'branding.favicon': { $regex: file, $options: 'i' } },
-              { 'heroSettings.backgroundImages': { $regex: file, $options: 'i' } }
-            ]
+              { "branding.logo": filePath },
+              { "branding.favicon": filePath },
+              { "branding.logo": file },
+              { "branding.favicon": file },
+              { "heroSettings.backgroundImages": filePath },
+              { "heroSettings.backgroundImages": file },
+              { "branding.logo": { $regex: file, $options: "i" } },
+              { "branding.favicon": { $regex: file, $options: "i" } },
+              {
+                "heroSettings.backgroundImages": {
+                  $regex: file,
+                  $options: "i",
+                },
+              },
+            ],
           });
           if (settings) isOrphaned = false;
           break;
 
-        case 'room-types':
+        case "room-types":
           // Check RoomType model images
           const roomTypes = await RoomType.find({
             $or: [
-              { 'images.url': filePath },
-              { 'images.url': file },
-              { 'images.url': { $regex: file, $options: 'i' } }
-            ]
+              { "images.url": filePath },
+              { "images.url": file },
+              { "images.url": { $regex: file, $options: "i" } },
+            ],
           });
           if (roomTypes.length > 0) isOrphaned = false;
           break;
 
-        case 'event-venues':
+        case "event-venues":
           // Check EventType model images
           const eventTypes = await EventType.find({
             $or: [
-              { 'images.url': filePath },
-              { 'images.url': file },
-              { 'images.url': { $regex: file, $options: 'i' } }
-            ]
+              { "images.url": filePath },
+              { "images.url": file },
+              { "images.url": { $regex: file, $options: "i" } },
+            ],
           });
           if (eventTypes.length > 0) isOrphaned = false;
           break;
@@ -166,7 +171,7 @@ async function findOrphanedFiles(directory, files) {
         orphanedFiles.push({
           filename: file,
           path: filePath,
-          size: await getFileSize(directory, file)
+          size: await getFileSize(directory, file),
         });
       }
     } catch (error) {
@@ -180,24 +185,26 @@ async function findOrphanedFiles(directory, files) {
 
 async function cleanupOrphanedFiles(targetDirectory = null) {
   const uploadsDir = path.join(process.cwd(), "public", "uploads");
-  const uploadDirs = targetDirectory ? [targetDirectory] : await fs.readdir(uploadsDir);
+  const uploadDirs = targetDirectory
+    ? [targetDirectory]
+    : await fs.readdir(uploadsDir);
 
   const results = {
     deletedFiles: 0,
     deletedSize: 0,
-    errors: []
+    errors: [],
   };
 
   for (const dir of uploadDirs) {
     const dirPath = path.join(uploadsDir, dir);
-    
+
     try {
       const stat = await fs.stat(dirPath);
       if (!stat.isDirectory()) continue;
 
       const files = await fs.readdir(dirPath);
-      const uploadFiles = files.filter(file => !file.startsWith('.'));
-      
+      const uploadFiles = files.filter((file) => !file.startsWith("."));
+
       const orphanedFiles = await findOrphanedFiles(dir, uploadFiles);
 
       for (const orphanedFile of orphanedFiles) {
@@ -209,14 +216,14 @@ async function cleanupOrphanedFiles(targetDirectory = null) {
         } catch (error) {
           results.errors.push({
             file: orphanedFile.filename,
-            error: error.message
+            error: error.message,
           });
         }
       }
     } catch (error) {
       results.errors.push({
         directory: dir,
-        error: error.message
+        error: error.message,
       });
     }
   }
@@ -226,7 +233,13 @@ async function cleanupOrphanedFiles(targetDirectory = null) {
 
 async function getFileSize(directory, filename) {
   try {
-    const filePath = path.join(process.cwd(), "public", "uploads", directory, filename);
+    const filePath = path.join(
+      process.cwd(),
+      "public",
+      "uploads",
+      directory,
+      filename
+    );
     const stats = await fs.stat(filePath);
     return stats.size;
   } catch (error) {

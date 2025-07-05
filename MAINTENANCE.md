@@ -1,23 +1,28 @@
 # System Maintenance
 
 ## Overview
+
 The maintenance section provides tools to clean up orphaned files in the upload directories. These are files that exist in the file system but are no longer referenced in the database.
 
 ## Features
 
 ### 1. Upload Analysis
+
 - Scans all upload directories (`favicon`, `logo`, `gallery`, `hero`, `room-types`, `event-venues`)
 - Compares files against database records
 - Identifies orphaned files that can be safely deleted
 
 ### 2. File Cleanup
+
 - Selective cleanup by directory
 - Bulk cleanup of all orphaned files
 - Real-time progress and results reporting
 - Safe deletion with confirmation dialogs
 
 ### 3. Database Cross-Reference
+
 The system checks files against the following models:
+
 - **Gallery files**: `Gallery` model `imageUrl` field
 - **Logo/Favicon files**: `AppSetting` model `branding.logo` and `branding.favicon` fields
 - **Hero images**: `AppSetting` model `heroSettings.backgroundImages` array
@@ -27,9 +32,11 @@ The system checks files against the following models:
 ## API Endpoints
 
 ### GET `/api/admin/maintenance`
+
 Analyzes upload directories and returns orphaned file information.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -56,9 +63,11 @@ Analyzes upload directories and returns orphaned file information.
 ```
 
 ### POST `/api/admin/maintenance`
+
 Performs cleanup of orphaned files.
 
 **Request:**
+
 ```json
 {
   "action": "cleanup",
@@ -67,6 +76,7 @@ Performs cleanup of orphaned files.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -97,6 +107,7 @@ Performs cleanup of orphaned files.
 ## File Matching Logic
 
 The system uses multiple matching strategies:
+
 1. Exact path match (`/uploads/gallery/image.jpg`)
 2. Filename match (`image.jpg`)
 3. Case-insensitive regex match for flexibility
