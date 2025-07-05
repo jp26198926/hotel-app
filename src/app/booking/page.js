@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, CheckCircle, CreditCard, Printer } from "lucide-react";
@@ -10,7 +10,7 @@ import Stepper from "@/components/Stepper";
 import TangMowLogo from "@/components/TangMowLogo";
 import { useToast } from "@/components/Toast";
 
-export default function BookingPage() {
+function BookingPageContent() {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState("booking"); // 'booking', 'payment', 'confirmation'
   const [bookingData, setBookingData] = useState(null);
@@ -746,5 +746,26 @@ export default function BookingPage() {
       {/* Toast Notifications */}
       <ToastComponent />
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function BookingLoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading booking page...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<BookingLoadingFallback />}>
+      <BookingPageContent />
+    </Suspense>
   );
 }

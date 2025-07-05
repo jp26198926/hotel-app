@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -125,7 +125,7 @@ const categories = [
   "Beverages",
 ];
 
-export default function RestaurantOrderPage() {
+function RestaurantOrderPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { showError, showSuccess, ToastComponent } = useToast();
@@ -754,5 +754,26 @@ export default function RestaurantOrderPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function RestaurantLoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading restaurant menu...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function RestaurantOrderPage() {
+  return (
+    <Suspense fallback={<RestaurantLoadingFallback />}>
+      <RestaurantOrderPageContent />
+    </Suspense>
   );
 }

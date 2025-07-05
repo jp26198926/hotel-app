@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui";
 import TangMowLogo from "@/components/TangMowLogo";
 
-export default function EventBookingSuccess() {
+function EventBookingSuccessContent() {
   const searchParams = useSearchParams();
   const [bookingDetails, setBookingDetails] = useState(null);
 
@@ -361,5 +361,26 @@ export default function EventBookingSuccess() {
         </div>
       </div>
     </>
+  );
+}
+
+// Loading component for Suspense fallback
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading booking details...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function EventBookingSuccess() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <EventBookingSuccessContent />
+    </Suspense>
   );
 }
