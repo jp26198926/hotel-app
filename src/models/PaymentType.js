@@ -194,7 +194,6 @@ const PaymentTypeSchema = new mongoose.Schema(
   }
 );
 
-PaymentTypeSchema.index({ slug: 1 });
 PaymentTypeSchema.index({ category: 1, isActive: 1 });
 PaymentTypeSchema.index({ isActive: 1, sortOrder: 1 });
 PaymentTypeSchema.index({ method: 1 });

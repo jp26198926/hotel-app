@@ -331,7 +331,6 @@ const MenuItemSchema = new mongoose.Schema(
   }
 );
 
-MenuItemSchema.index({ slug: 1 });
 MenuItemSchema.index({ "category.main": 1, "category.sub": 1, isActive: 1 });
 MenuItemSchema.index({ isActive: 1, sortOrder: 1 });
 MenuItemSchema.index({ isFeatured: 1, isActive: 1 });

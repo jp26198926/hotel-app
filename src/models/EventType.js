@@ -180,7 +180,6 @@ const EventTypeSchema = new mongoose.Schema(
   }
 );
 
-EventTypeSchema.index({ slug: 1 });
 EventTypeSchema.index({ category: 1, isActive: 1 });
 EventTypeSchema.index({ isActive: 1, sortOrder: 1 });
 

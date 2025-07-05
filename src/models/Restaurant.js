@@ -231,13 +231,11 @@ const RestaurantReservationSchema = new mongoose.Schema(
 );
 
 // Indexes
-RestaurantTableSchema.index({ tableNumber: 1 });
 RestaurantTableSchema.index({ capacity: 1, status: 1 });
 
 MenuItemSchema.index({ category: 1, isAvailable: 1 });
 MenuItemSchema.index({ name: "text", description: "text" });
 
-RestaurantReservationSchema.index({ reservationId: 1 });
 RestaurantReservationSchema.index({ date: 1, time: 1 });
 RestaurantReservationSchema.index({ "guest.email": 1 });
 RestaurantReservationSchema.index({ status: 1 });

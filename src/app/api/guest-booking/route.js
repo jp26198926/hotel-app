@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongoose";
 import Booking from "@/models/Booking";
 import Room from "@/models/Room";
 import { guestBookingSchema } from "@/lib/validations";
 
 export async function POST(request) {
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     const body = await request.json();
 
@@ -153,7 +153,7 @@ export async function POST(request) {
 
 export async function GET(request) {
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     const { searchParams } = new URL(request.url);
     const bookingReference = searchParams.get("reference");

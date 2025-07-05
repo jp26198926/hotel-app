@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongoose";
 import Room from "@/models/Room";
 
 export async function GET() {
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     const rooms = await Room.find({ isActive: true }).sort({ roomNumber: 1 });
 
@@ -24,7 +24,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     const body = await request.json();
 

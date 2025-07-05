@@ -184,7 +184,6 @@ const RoomTypeSchema = new mongoose.Schema(
   }
 );
 
-RoomTypeSchema.index({ slug: 1 });
 RoomTypeSchema.index({ isActive: 1, sortOrder: 1 });
 RoomTypeSchema.index({ "pricing.basePrice": 1 });
 

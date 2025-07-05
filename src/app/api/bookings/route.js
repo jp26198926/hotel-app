@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongoose";
 import Booking from "@/models/Booking";
 import Room from "@/models/Room";
 import User from "@/models/User";
 
 export async function GET(request) {
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page")) || 1;
@@ -49,7 +49,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     const body = await request.json();
 

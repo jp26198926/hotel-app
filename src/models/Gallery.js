@@ -186,7 +186,6 @@ GallerySchema.index({ isHero: 1 });
 GallerySchema.index({ displayOrder: 1 });
 GallerySchema.index({ tags: 1 });
 GallerySchema.index({ createdAt: -1 });
-GallerySchema.index({ "seoData.slug": 1 });
 
 // Pre-save middleware to generate slug
 GallerySchema.pre("save", function (next) {

@@ -292,7 +292,6 @@ EventSchema.pre("save", function (next) {
   }
 });
 
-EventSchema.index({ eventNumber: 1 });
 EventSchema.index({ client: 1, status: 1 });
 EventSchema.index({ "dateTime.eventDate": 1 });
 EventSchema.index({ status: 1, "dateTime.eventDate": 1 });

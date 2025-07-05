@@ -121,7 +121,6 @@ const BookingSchema = new mongoose.Schema(
 );
 
 // Indexes for better query performance
-BookingSchema.index({ bookingId: 1 });
 BookingSchema.index({ guest: 1 });
 BookingSchema.index({ room: 1 });
 BookingSchema.index({ checkIn: 1, checkOut: 1 });

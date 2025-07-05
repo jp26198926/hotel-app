@@ -1,10 +1,10 @@
-import dbConnect from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongoose";
 import AppSetting from "@/models/AppSetting";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     let settings = await AppSetting.findOne({ settingsType: "main" });
 
@@ -29,7 +29,7 @@ export async function GET() {
 
 export async function PUT(request) {
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     const body = await request.json();
 

@@ -203,8 +203,6 @@ PaymentSchema.pre("save", function (next) {
   next();
 });
 
-PaymentSchema.index({ paymentNumber: 1 });
-PaymentSchema.index({ transactionId: 1 });
 PaymentSchema.index({ customer: 1, status: 1 });
 PaymentSchema.index({ "relatedTo.type": 1, "relatedTo.id": 1 });
 PaymentSchema.index({ status: 1, paymentDate: -1 });

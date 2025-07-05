@@ -131,7 +131,6 @@ const RoomSchema = new mongoose.Schema(
   }
 );
 
-RoomSchema.index({ roomNumber: 1 });
 RoomSchema.index({ roomType: 1, status: 1 });
 RoomSchema.index({ floor: 1 });
 RoomSchema.index({ status: 1 });

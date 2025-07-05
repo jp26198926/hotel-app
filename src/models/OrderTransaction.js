@@ -145,7 +145,6 @@ const OrderTransactionSchema = new mongoose.Schema(
 );
 
 // Indexes for better query performance
-OrderTransactionSchema.index({ orderId: 1 });
 OrderTransactionSchema.index({ customer: 1 });
 OrderTransactionSchema.index({ orderStatus: 1 });
 OrderTransactionSchema.index({ orderDate: -1 });

@@ -204,7 +204,6 @@ const UserRoleSchema = new mongoose.Schema(
 );
 
 // Indexes for better query performance
-UserRoleSchema.index({ name: 1 });
 UserRoleSchema.index({ level: 1 });
 UserRoleSchema.index({ isActive: 1 });
 UserRoleSchema.index({ isSystem: 1 });

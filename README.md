@@ -99,7 +99,7 @@ src/
 ├── components/            # Reusable React components
 │   └── ui/               # UI component library
 ├── lib/                  # Utility functions and configurations
-│   ├── mongodb.js        # Database connection
+│   ├── mongoose.js       # Database connection
 │   ├── utils.js          # Helper functions
 │   └── validations.js    # Zod schemas
 └── models/               # MongoDB/Mongoose models
