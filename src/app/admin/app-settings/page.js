@@ -85,12 +85,16 @@ export default function AppSettingsPage() {
         const fileUrl = await handleFileUpload(file, "logo");
 
         // Update local state to show the new logo immediately
-        handleAppSettingsChange("logo", fileUrl);
+        const updatedSettings = {
+          ...localAppSettings,
+          logo: fileUrl,
+        };
+        setLocalAppSettings(updatedSettings);
+
+        // Save to database and update context
+        await saveAppSettings(updatedSettings);
 
         showSuccess("Logo uploaded and replaced successfully!");
-
-        // Refresh the context to get the updated settings from the server
-        window.location.reload();
       } catch (error) {
         console.error("Logo upload error:", error);
         showError("Failed to upload logo. Please try again.");
@@ -116,12 +120,16 @@ export default function AppSettingsPage() {
         const fileUrl = await handleFileUpload(file, "favicon");
 
         // Update local state to show the new favicon immediately
-        handleAppSettingsChange("favicon", fileUrl);
+        const updatedSettings = {
+          ...localAppSettings,
+          favicon: fileUrl,
+        };
+        setLocalAppSettings(updatedSettings);
+
+        // Save to database and update context
+        await saveAppSettings(updatedSettings);
 
         showSuccess("Favicon uploaded and replaced successfully!");
-
-        // Refresh the context to get the updated settings from the server
-        window.location.reload();
       } catch (error) {
         console.error("Favicon upload error:", error);
         showError("Failed to upload favicon. Please try again.");
@@ -290,6 +298,7 @@ export default function AppSettingsPage() {
                         width={64}
                         height={64}
                         className="object-cover"
+                        key={localAppSettings.logo} // Force re-render when logo changes
                       />
                     </div>
                   )}
@@ -330,6 +339,7 @@ export default function AppSettingsPage() {
                         width={32}
                         height={32}
                         className="object-cover"
+                        key={localAppSettings.favicon} // Force re-render when favicon changes
                       />
                     </div>
                   )}

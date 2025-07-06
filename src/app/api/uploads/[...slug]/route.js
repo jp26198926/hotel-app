@@ -1,7 +1,24 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
-import { lookup } from "mime-types";
+
+// Simple MIME type lookup without external dependency
+function getMimeType(filename) {
+  const ext = path.extname(filename).toLowerCase();
+  const mimeTypes = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".svg": "image/svg+xml",
+    ".webp": "image/webp",
+    ".ico": "image/x-icon",
+    ".bmp": "image/bmp",
+    ".tiff": "image/tiff",
+    ".tif": "image/tiff",
+  };
+  return mimeTypes[ext] || "application/octet-stream";
+}
 
 export async function GET(request, { params }) {
   try {
@@ -29,7 +46,7 @@ export async function GET(request, { params }) {
       const fileBuffer = await fs.readFile(filePath);
 
       // Get mime type
-      const mimeType = lookup(filename) || "application/octet-stream";
+      const mimeType = getMimeType(filename);
 
       // Return file with appropriate headers
       return new NextResponse(fileBuffer, {

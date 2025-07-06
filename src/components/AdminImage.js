@@ -10,20 +10,25 @@ export default function AdminImage({
   className,
   onLoad,
   onError,
+  width,
+  height,
   ...props
 }) {
   // Check if the image is a local upload or external
   const isLocalUpload = src && src.startsWith("/uploads/");
 
   if (isLocalUpload) {
-    // For local uploads, use regular img tag to avoid Next.js optimization issues
+    // For local uploads, use Next.js Image with unoptimized to avoid optimization issues
     return (
-      <img
+      <Image
         src={src}
         alt={alt}
         className={className}
         onLoad={onLoad}
         onError={onError}
+        width={width || 300}
+        height={height || 200}
+        unoptimized
         {...props}
       />
     );
