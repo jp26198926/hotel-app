@@ -1,24 +1,17 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir, readdir, unlink } from "fs/promises";
-import path from "path";
 import { connectToDatabase } from "@/lib/mongoose";
 import AppSetting from "@/models/AppSetting";
+import {
+  uploadToCloudinary,
+  replaceInCloudinary,
+  getRootFolder,
+} from "@/lib/cloudinary";
 
 export async function POST(request) {
   try {
-    // Warning for production deployment
-    if (process.env.NODE_ENV === "production") {
-      console.warn(
-        "⚠️  WARNING: File uploads in production will be lost on container restart."
-      );
-      console.warn(
-        "💡 Consider using cloud storage (Cloudinary, AWS S3, etc.) for production."
-      );
-    }
-
     const formData = await request.formData();
     const file = formData.get("file");
-    const type = formData.get("type"); // 'logo' or 'favicon'
+    const type = formData.get("type"); // 'logo', 'favicon', 'hero', 'gallery'
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -61,66 +54,70 @@ export async function POST(request) {
       }
     }
 
-    // Create upload directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), "public", "uploads", type);
+    // Check if Cloudinary is configured
+    if (
+      !process.env.CLOUDINARY_CLOUD_NAME ||
+      !process.env.CLOUDINARY_API_KEY ||
+      !process.env.CLOUDINARY_API_SECRET
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Cloudinary is not configured. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET environment variables.",
+        },
+        { status: 500 }
+      );
+    }
+
+    // Get site name for folder structure
+    let siteName = "Tang Mow Hotel";
     try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist
-    }
-
-    // For logo and favicon, remove old files first
-    if (type === "logo" || type === "favicon") {
       await connectToDatabase();
-
-      // Get current settings to find old file
-      const currentSettings = await AppSetting.findOne({
-        settingsType: "main",
-      });
-
-      if (currentSettings) {
-        const oldFileUrl =
-          type === "logo"
-            ? currentSettings.branding?.logo
-            : currentSettings.branding?.favicon;
-
-        if (oldFileUrl && oldFileUrl.startsWith("/uploads/")) {
-          // Extract filename from URL
-          const oldFileName = path.basename(oldFileUrl);
-          const oldFilePath = path.join(uploadDir, oldFileName);
-
-          try {
-            await unlink(oldFilePath);
-            console.log(`Deleted old ${type} file: ${oldFileName}`);
-          } catch (error) {
-            console.log(
-              `Could not delete old ${type} file (may not exist): ${oldFileName}`
-            );
-          }
-        }
+      const settings = await AppSetting.findOne({ settingsType: "main" });
+      if (settings?.siteName) {
+        siteName = settings.siteName;
       }
+    } catch (error) {
+      console.warn("Could not fetch site name from database, using default");
     }
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const fileExtension = path.extname(file.name);
-    const fileName = `${type}-${timestamp}${fileExtension}`;
-    const filePath = path.join(uploadDir, fileName);
-
-    // Convert file to buffer and save
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
 
-    // Return the URL path for the uploaded file
-    const fileUrl = `/uploads/${type}/${fileName}`;
+    let uploadResult;
 
-    console.log(`📁 File uploaded successfully:`);
+    // For logo and favicon, use replace functionality to maintain consistent URLs
+    if (type === "logo" || type === "favicon") {
+      const fileName = type === "logo" ? "logo" : "favicon";
+      uploadResult = await replaceInCloudinary(
+        buffer,
+        type,
+        fileName,
+        siteName
+      );
+    } else {
+      // For hero and gallery images, allow multiple files
+      uploadResult = await uploadToCloudinary(buffer, {
+        folder: type,
+        siteName: siteName,
+        originalName: file.name,
+      });
+    }
+
+    if (!uploadResult.success) {
+      return NextResponse.json(
+        { error: uploadResult.error || "Failed to upload to Cloudinary" },
+        { status: 500 }
+      );
+    }
+
+    console.log(`☁️  File uploaded to Cloudinary successfully:`);
     console.log(`   - Type: ${type}`);
-    console.log(`   - Filename: ${fileName}`);
-    console.log(`   - URL: ${fileUrl}`);
-    console.log(`   - File path: ${filePath}`);
-    console.log(`   - Environment: ${process.env.NODE_ENV}`);
+    console.log(`   - Site: ${siteName} (${getRootFolder(siteName)})`);
+    console.log(`   - URL: ${uploadResult.url}`);
+    console.log(`   - Public ID: ${uploadResult.publicId}`);
+    console.log(`   - Folder: ${uploadResult.folder}`);
 
     // For logo and favicon, update the database immediately
     if (type === "logo" || type === "favicon") {
@@ -129,9 +126,9 @@ export async function POST(request) {
 
         const updateData = {};
         if (type === "logo") {
-          updateData["branding.logo"] = fileUrl;
+          updateData["branding.logo"] = uploadResult.url;
         } else if (type === "favicon") {
-          updateData["branding.favicon"] = fileUrl;
+          updateData["branding.favicon"] = uploadResult.url;
         }
 
         const updatedSettings = await AppSetting.findOneAndUpdate(
@@ -140,8 +137,7 @@ export async function POST(request) {
           { new: true, upsert: true }
         );
 
-        console.log(`✅ Updated ${type} in database: ${fileUrl}`);
-        console.log(`📊 Current branding settings:`, updatedSettings?.branding);
+        console.log(`✅ Updated ${type} in database: ${uploadResult.url}`);
       } catch (dbError) {
         console.error(`❌ Failed to update ${type} in database:`, dbError);
         // Don't fail the upload if database update fails
@@ -150,8 +146,16 @@ export async function POST(request) {
 
     const response = {
       success: true,
-      message: `${type} uploaded successfully`,
-      fileUrl: fileUrl,
+      message: `${type} uploaded successfully to Cloudinary`,
+      fileUrl: uploadResult.url,
+      cloudinary: {
+        publicId: uploadResult.publicId,
+        folder: uploadResult.folder,
+        format: uploadResult.format,
+        width: uploadResult.width,
+        height: uploadResult.height,
+        bytes: uploadResult.bytes,
+      },
     };
 
     // For gallery uploads, include additional metadata
@@ -160,7 +164,7 @@ export async function POST(request) {
         fileName: file.name,
         fileSize: file.size,
         mimeType: file.type,
-        uploadPath: fileName,
+        cloudinaryPublicId: uploadResult.publicId,
       };
     }
 

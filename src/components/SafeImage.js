@@ -2,8 +2,8 @@ import { useState } from "react";
 import Image from "next/image";
 
 /**
- * SafeImage component that handles both local uploads and external images
- * Uses Next.js Image with unoptimized flag for local uploads to avoid optimization issues
+ * SafeImage component that handles local uploads, Cloudinary images, and external images
+ * Uses Next.js Image with proper optimization for Cloudinary and external sources
  */
 export default function SafeImage({
   src,
@@ -16,8 +16,9 @@ export default function SafeImage({
 }) {
   const [imageError, setImageError] = useState(false);
 
-  // Check if it's a local upload
+  // Check if it's a local upload or Cloudinary image
   const isLocalUpload = src && src.startsWith("/uploads/");
+  const isCloudinaryImage = src && src.includes("res.cloudinary.com");
 
   if (imageError && fallback) {
     return fallback;
@@ -34,7 +35,7 @@ export default function SafeImage({
       width={width}
       height={height}
       className={className}
-      // Use unoptimized for local uploads to prevent optimization issues
+      // Use unoptimized only for local uploads
       unoptimized={isLocalUpload}
       // Add proper error handling
       onError={() => {
@@ -43,7 +44,8 @@ export default function SafeImage({
       }}
       // Ensure proper loading behavior
       priority={false}
-      quality={isLocalUpload ? 100 : 75}
+      // Use better quality for Cloudinary images since they're optimized
+      quality={isCloudinaryImage ? 80 : isLocalUpload ? 100 : 75}
       {...props}
     />
   );

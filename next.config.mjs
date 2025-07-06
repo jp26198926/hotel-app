@@ -8,7 +8,14 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
-      // Add your domain for production
+      // Cloudinary domain for image uploads
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/**",
+      },
+      // Add your domain for production (keeping for backward compatibility)
       {
         protocol: "https",
         hostname: "hotel-app-n9ce.onrender.com",
@@ -22,10 +29,10 @@ const nextConfig = {
     // Add domain allowlist for production
     domains:
       process.env.NODE_ENV === "production"
-        ? ["hotel-app-n9ce.onrender.com"]
-        : [],
+        ? ["hotel-app-n9ce.onrender.com", "res.cloudinary.com"]
+        : ["res.cloudinary.com"],
   },
-  // Ensure static files are properly served
+  // Ensure static files are properly served (keeping for backward compatibility)
   async rewrites() {
     return [
       {
