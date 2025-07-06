@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CheckCircle, AlertTriangle, X, Info } from "lucide-react";
 
 const Toast = ({
@@ -98,21 +98,21 @@ export const useToast = () => {
     isVisible: false,
   });
 
-  const showToast = (message, type = "info", duration = 5000) => {
+  const showToast = useCallback((message, type = "info", duration = 5000) => {
     setToast({
       message,
       type,
       isVisible: true,
       duration,
     });
-  };
+  }, []);
 
-  const hideToast = () => {
+  const hideToast = useCallback(() => {
     setToast((prev) => ({
       ...prev,
       isVisible: false,
     }));
-  };
+  }, []);
 
   const ToastComponent = () => (
     <Toast
@@ -124,14 +124,31 @@ export const useToast = () => {
     />
   );
 
+  const showSuccess = useCallback(
+    (message, duration) => showToast(message, "success", duration),
+    [showToast]
+  );
+  const showError = useCallback(
+    (message, duration) => showToast(message, "error", duration),
+    [showToast]
+  );
+  const showWarning = useCallback(
+    (message, duration) => showToast(message, "warning", duration),
+    [showToast]
+  );
+  const showInfo = useCallback(
+    (message, duration) => showToast(message, "info", duration),
+    [showToast]
+  );
+
   return {
     showToast,
     hideToast,
     ToastComponent,
-    showSuccess: (message, duration) => showToast(message, "success", duration),
-    showError: (message, duration) => showToast(message, "error", duration),
-    showWarning: (message, duration) => showToast(message, "warning", duration),
-    showInfo: (message, duration) => showToast(message, "info", duration),
+    showSuccess,
+    showError,
+    showWarning,
+    showInfo,
   };
 };
 

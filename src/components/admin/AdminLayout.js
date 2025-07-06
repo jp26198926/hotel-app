@@ -186,7 +186,7 @@ export default function AdminLayout({ children, title, description }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {ToastComponent}
+      <ToastComponent />
 
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (

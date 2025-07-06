@@ -6,7 +6,9 @@ export async function GET() {
   try {
     await connectToDatabase();
 
-    const rooms = await Room.find({ isActive: true }).sort({ roomNumber: 1 });
+    const rooms = await Room.find({ isActive: true })
+      .populate("roomType")
+      .sort({ roomNumber: 1 });
 
     return NextResponse.json({
       success: true,
@@ -28,6 +30,14 @@ export async function POST(request) {
 
     const body = await request.json();
 
+    // Clean up empty string values for optional enum fields
+    if (body.wing === "") {
+      delete body.wing;
+    }
+    if (body.features?.view === "") {
+      body.features.view = undefined;
+    }
+
     // Check if room number already exists
     const existingRoom = await Room.findOne({
       roomNumber: body.roomNumber,
@@ -42,11 +52,12 @@ export async function POST(request) {
     }
 
     const room = await Room.create(body);
+    const populatedRoom = await Room.findById(room._id).populate("roomType");
 
     return NextResponse.json(
       {
         success: true,
-        data: room,
+        data: populatedRoom,
       },
       { status: 201 }
     );
