@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, readdir, unlink } from "fs/promises";
 import path from "path";
+import { connectToDatabase } from "@/lib/mongoose";
+import AppSetting from "@/models/AppSetting";
 
 export async function POST(request) {
   try {
@@ -57,6 +59,38 @@ export async function POST(request) {
       // Directory might already exist
     }
 
+    // For logo and favicon, remove old files first
+    if (type === "logo" || type === "favicon") {
+      await connectToDatabase();
+
+      // Get current settings to find old file
+      const currentSettings = await AppSetting.findOne({
+        settingsType: "main",
+      });
+
+      if (currentSettings) {
+        const oldFileUrl =
+          type === "logo"
+            ? currentSettings.branding?.logo
+            : currentSettings.branding?.favicon;
+
+        if (oldFileUrl && oldFileUrl.startsWith("/uploads/")) {
+          // Extract filename from URL
+          const oldFileName = path.basename(oldFileUrl);
+          const oldFilePath = path.join(uploadDir, oldFileName);
+
+          try {
+            await unlink(oldFilePath);
+            console.log(`Deleted old ${type} file: ${oldFileName}`);
+          } catch (error) {
+            console.log(
+              `Could not delete old ${type} file (may not exist): ${oldFileName}`
+            );
+          }
+        }
+      }
+    }
+
     // Generate unique filename
     const timestamp = Date.now();
     const fileExtension = path.extname(file.name);
@@ -70,6 +104,31 @@ export async function POST(request) {
 
     // Return the URL path for the uploaded file
     const fileUrl = `/uploads/${type}/${fileName}`;
+
+    // For logo and favicon, update the database immediately
+    if (type === "logo" || type === "favicon") {
+      try {
+        await connectToDatabase();
+
+        const updateData = {};
+        if (type === "logo") {
+          updateData["branding.logo"] = fileUrl;
+        } else if (type === "favicon") {
+          updateData["branding.favicon"] = fileUrl;
+        }
+
+        await AppSetting.findOneAndUpdate(
+          { settingsType: "main" },
+          updateData,
+          { new: true, upsert: true }
+        );
+
+        console.log(`Updated ${type} in database: ${fileUrl}`);
+      } catch (dbError) {
+        console.error(`Failed to update ${type} in database:`, dbError);
+        // Don't fail the upload if database update fails
+      }
+    }
 
     const response = {
       success: true,

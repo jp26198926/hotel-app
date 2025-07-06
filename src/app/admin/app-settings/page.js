@@ -83,13 +83,14 @@ export default function AppSettingsPage() {
       setUploadingLogo(true);
       try {
         const fileUrl = await handleFileUpload(file, "logo");
+
+        // Update local state to show the new logo immediately
         handleAppSettingsChange("logo", fileUrl);
 
-        // Auto-save the settings to database
-        const updatedSettings = { ...localAppSettings, logo: fileUrl };
-        await saveAppSettings(updatedSettings);
+        showSuccess("Logo uploaded and replaced successfully!");
 
-        showSuccess("Logo uploaded and saved successfully!");
+        // Refresh the context to get the updated settings from the server
+        window.location.reload();
       } catch (error) {
         console.error("Logo upload error:", error);
         showError("Failed to upload logo. Please try again.");
@@ -113,13 +114,14 @@ export default function AppSettingsPage() {
       setUploadingFavicon(true);
       try {
         const fileUrl = await handleFileUpload(file, "favicon");
+
+        // Update local state to show the new favicon immediately
         handleAppSettingsChange("favicon", fileUrl);
 
-        // Auto-save the settings to database
-        const updatedSettings = { ...localAppSettings, favicon: fileUrl };
-        await saveAppSettings(updatedSettings);
+        showSuccess("Favicon uploaded and replaced successfully!");
 
-        showSuccess("Favicon uploaded and saved successfully!");
+        // Refresh the context to get the updated settings from the server
+        window.location.reload();
       } catch (error) {
         console.error("Favicon upload error:", error);
         showError("Failed to upload favicon. Please try again.");
@@ -242,6 +244,10 @@ export default function AppSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Logo
                 </label>
+                <p className="text-xs text-gray-500 mb-3">
+                  Uploading a new logo will replace the existing one and update
+                  the database automatically.
+                </p>
                 <div className="flex items-center space-x-4">
                   {localAppSettings.logo && (
                     <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
@@ -265,7 +271,11 @@ export default function AppSettingsPage() {
                     ) : (
                       <Upload className="h-4 w-4 mr-2" />
                     )}
-                    {uploadingLogo ? "Uploading..." : "Upload Logo"}
+                    {uploadingLogo
+                      ? "Replacing..."
+                      : localAppSettings.logo
+                      ? "Replace Logo"
+                      : "Upload Logo"}
                   </Button>
                 </div>
               </div>
@@ -274,6 +284,10 @@ export default function AppSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Favicon
                 </label>
+                <p className="text-xs text-gray-500 mb-3">
+                  Uploading a new favicon will replace the existing one and
+                  update the database automatically.
+                </p>
                 <div className="flex items-center space-x-4">
                   {localAppSettings.favicon && (
                     <div className="w-8 h-8 bg-gray-100 rounded overflow-hidden">
@@ -297,7 +311,11 @@ export default function AppSettingsPage() {
                     ) : (
                       <Upload className="h-4 w-4 mr-2" />
                     )}
-                    {uploadingFavicon ? "Uploading..." : "Upload Favicon"}
+                    {uploadingFavicon
+                      ? "Replacing..."
+                      : localAppSettings.favicon
+                      ? "Replace Favicon"
+                      : "Upload Favicon"}
                   </Button>
                 </div>
               </div>
