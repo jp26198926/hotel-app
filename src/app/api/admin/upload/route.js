@@ -6,6 +6,16 @@ import AppSetting from "@/models/AppSetting";
 
 export async function POST(request) {
   try {
+    // Warning for production deployment
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "⚠️  WARNING: File uploads in production will be lost on container restart."
+      );
+      console.warn(
+        "💡 Consider using cloud storage (Cloudinary, AWS S3, etc.) for production."
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file");
     const type = formData.get("type"); // 'logo' or 'favicon'
@@ -105,6 +115,13 @@ export async function POST(request) {
     // Return the URL path for the uploaded file
     const fileUrl = `/uploads/${type}/${fileName}`;
 
+    console.log(`📁 File uploaded successfully:`);
+    console.log(`   - Type: ${type}`);
+    console.log(`   - Filename: ${fileName}`);
+    console.log(`   - URL: ${fileUrl}`);
+    console.log(`   - File path: ${filePath}`);
+    console.log(`   - Environment: ${process.env.NODE_ENV}`);
+
     // For logo and favicon, update the database immediately
     if (type === "logo" || type === "favicon") {
       try {
@@ -117,15 +134,16 @@ export async function POST(request) {
           updateData["branding.favicon"] = fileUrl;
         }
 
-        await AppSetting.findOneAndUpdate(
+        const updatedSettings = await AppSetting.findOneAndUpdate(
           { settingsType: "main" },
           updateData,
           { new: true, upsert: true }
         );
 
-        console.log(`Updated ${type} in database: ${fileUrl}`);
+        console.log(`✅ Updated ${type} in database: ${fileUrl}`);
+        console.log(`📊 Current branding settings:`, updatedSettings?.branding);
       } catch (dbError) {
-        console.error(`Failed to update ${type} in database:`, dbError);
+        console.error(`❌ Failed to update ${type} in database:`, dbError);
         // Don't fail the upload if database update fails
       }
     }
