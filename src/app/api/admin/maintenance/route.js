@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
-import { promises as fs } from "fs";
-import path from "path";
+import {
+  listCloudinaryResources,
+  getCloudinaryUsage,
+  deleteMultipleFromCloudinary,
+  getRootFolder,
+} from "@/lib/cloudinary";
 import Gallery from "@/models/Gallery";
 import AppSetting from "@/models/AppSetting";
 import RoomType from "@/models/RoomType";
@@ -11,45 +15,63 @@ export async function GET() {
   try {
     await connectToDatabase();
 
-    // Get all directories in uploads
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    const uploadDirs = await fs.readdir(uploadsDir);
+    // Get site name from settings
+    const settings = await AppSetting.findOne({ settingsType: "main" });
+    const siteName = settings?.siteName || "Tang Mow Hotel";
+    const rootFolder = getRootFolder(siteName);
+
+    // Get Cloudinary usage info
+    const usageResult = await getCloudinaryUsage();
+
+    // Get all resources from our site folder
+    const resourcesResult = await listCloudinaryResources(rootFolder);
+
+    if (!resourcesResult.success) {
+      return NextResponse.json(
+        { success: false, error: resourcesResult.error },
+        { status: 500 }
+      );
+    }
 
     const results = {
-      totalFiles: 0,
-      orphanedFiles: 0,
+      totalResources: resourcesResult.totalCount,
+      orphanedResources: 0,
       cleanupResults: [],
       errors: [],
+      usage: usageResult.success ? usageResult.usage : null,
+      siteName,
+      rootFolder,
     };
 
-    for (const dir of uploadDirs) {
-      const dirPath = path.join(uploadsDir, dir);
-      const stat = await fs.stat(dirPath);
+    // Group resources by folder type
+    const folderTypes = [
+      "logo",
+      "favicon",
+      "hero",
+      "gallery",
+      "room-types",
+      "event-venues",
+    ];
 
-      if (stat.isDirectory()) {
-        try {
-          const files = await fs.readdir(dirPath);
-          const uploadFiles = files.filter((file) => !file.startsWith("."));
+    for (const folderType of folderTypes) {
+      const folderPrefix = `${rootFolder}/${folderType}`;
+      const folderResources = resourcesResult.resources.filter((resource) =>
+        resource.public_id.startsWith(folderPrefix)
+      );
 
-          results.totalFiles += uploadFiles.length;
+      // Check for orphaned resources
+      const orphanedResources = await findOrphanedCloudinaryResources(
+        folderType,
+        folderResources
+      );
+      results.orphanedResources += orphanedResources.length;
 
-          // Check files against database
-          const orphanedFiles = await findOrphanedFiles(dir, uploadFiles);
-          results.orphanedFiles += orphanedFiles.length;
-
-          results.cleanupResults.push({
-            directory: dir,
-            totalFiles: uploadFiles.length,
-            orphanedFiles: orphanedFiles.length,
-            files: orphanedFiles,
-          });
-        } catch (error) {
-          results.errors.push({
-            directory: dir,
-            error: error.message,
-          });
-        }
-      }
+      results.cleanupResults.push({
+        directory: folderType,
+        totalResources: folderResources.length,
+        orphanedResources: orphanedResources.length,
+        resources: orphanedResources,
+      });
     }
 
     return NextResponse.json({
@@ -57,9 +79,9 @@ export async function GET() {
       data: results,
     });
   } catch (error) {
-    console.error("Error analyzing uploads:", error);
+    console.error("Error analyzing Cloudinary resources:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to analyze uploads" },
+      { success: false, error: "Failed to analyze Cloudinary resources" },
       { status: 500 }
     );
   }
@@ -72,7 +94,15 @@ export async function POST(request) {
     const { action, directory } = await request.json();
 
     if (action === "cleanup") {
-      const results = await cleanupOrphanedFiles(directory);
+      // Get site name from settings
+      const settings = await AppSetting.findOne({ settingsType: "main" });
+      const siteName = settings?.siteName || "Tang Mow Hotel";
+      const rootFolder = getRootFolder(siteName);
+
+      const results = await cleanupOrphanedCloudinaryResources(
+        directory,
+        rootFolder
+      );
       return NextResponse.json({
         success: true,
         data: results,
@@ -92,22 +122,24 @@ export async function POST(request) {
   }
 }
 
-async function findOrphanedFiles(directory, files) {
-  const orphanedFiles = [];
+async function findOrphanedCloudinaryResources(folderType, resources) {
+  const orphanedResources = [];
 
-  for (const file of files) {
-    const filePath = `/uploads/${directory}/${file}`;
+  for (const resource of resources) {
+    const resourceUrl = resource.secure_url;
+    const publicId = resource.public_id;
     let isOrphaned = true;
 
     try {
-      // Check different collections based on directory
-      switch (directory) {
+      // Check different collections based on folder type
+      switch (folderType) {
         case "gallery":
           const galleryItem = await Gallery.findOne({
             $or: [
-              { imageUrl: filePath },
-              { imageUrl: file },
-              { imageUrl: { $regex: file, $options: "i" } },
+              { imageUrl: resourceUrl },
+              {
+                imageUrl: { $regex: publicId.split("/").pop(), $options: "i" },
+              },
             ],
           });
           if (galleryItem) isOrphaned = false;
@@ -118,17 +150,24 @@ async function findOrphanedFiles(directory, files) {
         case "hero":
           const settings = await AppSetting.findOne({
             $or: [
-              { "branding.logo": filePath },
-              { "branding.favicon": filePath },
-              { "branding.logo": file },
-              { "branding.favicon": file },
-              { "heroSettings.backgroundImages": filePath },
-              { "heroSettings.backgroundImages": file },
-              { "branding.logo": { $regex: file, $options: "i" } },
-              { "branding.favicon": { $regex: file, $options: "i" } },
+              { "branding.logo": resourceUrl },
+              { "branding.favicon": resourceUrl },
+              { "heroSettings.backgroundImages": resourceUrl },
+              {
+                "branding.logo": {
+                  $regex: publicId.split("/").pop(),
+                  $options: "i",
+                },
+              },
+              {
+                "branding.favicon": {
+                  $regex: publicId.split("/").pop(),
+                  $options: "i",
+                },
+              },
               {
                 "heroSettings.backgroundImages": {
-                  $regex: file,
+                  $regex: publicId.split("/").pop(),
                   $options: "i",
                 },
               },
@@ -138,111 +177,135 @@ async function findOrphanedFiles(directory, files) {
           break;
 
         case "room-types":
-          // Check RoomType model images
           const roomTypes = await RoomType.find({
             $or: [
-              { "images.url": filePath },
-              { "images.url": file },
-              { "images.url": { $regex: file, $options: "i" } },
+              { "images.url": resourceUrl },
+              {
+                "images.url": {
+                  $regex: publicId.split("/").pop(),
+                  $options: "i",
+                },
+              },
             ],
           });
           if (roomTypes.length > 0) isOrphaned = false;
           break;
 
         case "event-venues":
-          // Check EventType model images
           const eventTypes = await EventType.find({
             $or: [
-              { "images.url": filePath },
-              { "images.url": file },
-              { "images.url": { $regex: file, $options: "i" } },
+              { "images.url": resourceUrl },
+              {
+                "images.url": {
+                  $regex: publicId.split("/").pop(),
+                  $options: "i",
+                },
+              },
             ],
           });
           if (eventTypes.length > 0) isOrphaned = false;
           break;
 
         default:
-          // For unknown directories, assume files are valid
+          // For unknown folder types, assume resources are valid
           isOrphaned = false;
           break;
       }
 
       if (isOrphaned) {
-        orphanedFiles.push({
-          filename: file,
-          path: filePath,
-          size: await getFileSize(directory, file),
+        orphanedResources.push({
+          publicId: resource.public_id,
+          url: resource.secure_url,
+          filename: resource.public_id.split("/").pop(),
+          size: resource.bytes || 0,
+          format: resource.format,
+          createdAt: resource.created_at,
+          width: resource.width,
+          height: resource.height,
         });
       }
     } catch (error) {
-      console.error(`Error checking file ${file}:`, error);
+      console.error(`Error checking resource ${publicId}:`, error);
       // If we can't check, assume it's valid to be safe
     }
   }
 
-  return orphanedFiles;
+  return orphanedResources;
 }
 
-async function cleanupOrphanedFiles(targetDirectory = null) {
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-  const uploadDirs = targetDirectory
-    ? [targetDirectory]
-    : await fs.readdir(uploadsDir);
-
+async function cleanupOrphanedCloudinaryResources(
+  targetDirectory = null,
+  rootFolder
+) {
   const results = {
-    deletedFiles: 0,
+    deletedResources: 0,
     deletedSize: 0,
     errors: [],
   };
 
-  for (const dir of uploadDirs) {
-    const dirPath = path.join(uploadsDir, dir);
+  try {
+    // Get all resources from the root folder
+    const resourcesResult = await listCloudinaryResources(rootFolder);
 
-    try {
-      const stat = await fs.stat(dirPath);
-      if (!stat.isDirectory()) continue;
+    if (!resourcesResult.success) {
+      throw new Error(resourcesResult.error);
+    }
 
-      const files = await fs.readdir(dirPath);
-      const uploadFiles = files.filter((file) => !file.startsWith("."));
+    const folderTypes = targetDirectory
+      ? [targetDirectory]
+      : ["logo", "favicon", "hero", "gallery", "room-types", "event-venues"];
 
-      const orphanedFiles = await findOrphanedFiles(dir, uploadFiles);
+    for (const folderType of folderTypes) {
+      const folderPrefix = `${rootFolder}/${folderType}`;
+      const folderResources = resourcesResult.resources.filter((resource) =>
+        resource.public_id.startsWith(folderPrefix)
+      );
 
-      for (const orphanedFile of orphanedFiles) {
-        try {
-          const filePath = path.join(dirPath, orphanedFile.filename);
-          await fs.unlink(filePath);
-          results.deletedFiles++;
-          results.deletedSize += orphanedFile.size;
-        } catch (error) {
-          results.errors.push({
-            file: orphanedFile.filename,
-            error: error.message,
-          });
+      const orphanedResources = await findOrphanedCloudinaryResources(
+        folderType,
+        folderResources
+      );
+
+      if (orphanedResources.length > 0) {
+        // Delete orphaned resources in batches
+        const batchSize = 100; // Cloudinary API limit
+        const publicIds = orphanedResources.map(
+          (resource) => resource.publicId
+        );
+
+        for (let i = 0; i < publicIds.length; i += batchSize) {
+          const batch = publicIds.slice(i, i + batchSize);
+          try {
+            const deleteResult = await deleteMultipleFromCloudinary(batch);
+            if (deleteResult.success) {
+              results.deletedResources += Object.keys(
+                deleteResult.deleted
+              ).length;
+              results.deletedSize += orphanedResources
+                .filter((resource) => batch.includes(resource.publicId))
+                .reduce((total, resource) => total + resource.size, 0);
+            } else {
+              results.errors.push({
+                batch: batch.join(", "),
+                error: deleteResult.error,
+              });
+            }
+          } catch (error) {
+            results.errors.push({
+              batch: batch.join(", "),
+              error: error.message,
+            });
+          }
         }
       }
-    } catch (error) {
-      results.errors.push({
-        directory: dir,
-        error: error.message,
-      });
     }
-  }
 
-  return results;
-}
-
-async function getFileSize(directory, filename) {
-  try {
-    const filePath = path.join(
-      process.cwd(),
-      "public",
-      "uploads",
-      directory,
-      filename
-    );
-    const stats = await fs.stat(filePath);
-    return stats.size;
+    return results;
   } catch (error) {
-    return 0;
+    console.error("Error cleaning up Cloudinary resources:", error);
+    results.errors.push({
+      general: error.message,
+    });
+    return results;
   }
 }

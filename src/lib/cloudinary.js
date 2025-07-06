@@ -147,4 +147,173 @@ export async function replaceInCloudinary(
   }
 }
 
+/**
+ * List all resources in a Cloudinary folder
+ * @param {string} folderPath - The folder path to search
+ * @param {Object} options - Search options
+ * @returns {Promise<Object>} - List result
+ */
+export async function listCloudinaryResources(folderPath = "", options = {}) {
+  try {
+    const searchOptions = {
+      type: "upload",
+      prefix: folderPath,
+      max_results: options.maxResults || 500,
+      ...options,
+    };
+
+    // Use the search API with proper syntax
+    const result = await cloudinary.search
+      .expression(`folder:${folderPath}*`)
+      .max_results(searchOptions.max_results)
+      .execute();
+
+    return {
+      success: true,
+      resources: result.resources,
+      totalCount: result.total_count,
+      nextCursor: result.next_cursor,
+    };
+  } catch (error) {
+    console.error("Cloudinary list error:", error);
+
+    // Fallback to admin API if search fails
+    try {
+      const adminResult = await cloudinary.api.resources({
+        type: "upload",
+        prefix: folderPath,
+        max_results: options.maxResults || 500,
+      });
+
+      return {
+        success: true,
+        resources: adminResult.resources,
+        totalCount: adminResult.total_count || adminResult.resources.length,
+        nextCursor: adminResult.next_cursor,
+      };
+    } catch (adminError) {
+      console.error("Cloudinary admin API error:", adminError);
+      return {
+        success: false,
+        error: adminError.message || error.message,
+        resources: [],
+        totalCount: 0,
+      };
+    }
+  }
+}
+
+/**
+ * Get Cloudinary usage and storage information
+ * @returns {Promise<Object>} - Usage information
+ */
+export async function getCloudinaryUsage() {
+  try {
+    const usage = await cloudinary.api.usage();
+
+    return {
+      success: true,
+      usage: {
+        storage: usage.storage || {},
+        bandwidth: usage.bandwidth || {},
+        requests: usage.requests || {},
+        transformations: usage.transformations || {},
+        plan: usage.plan || "Free",
+      },
+    };
+  } catch (error) {
+    console.error("Cloudinary usage error:", error);
+    return {
+      success: false,
+      error: error.message,
+      usage: {
+        storage: { usage: 0, limit: 0 },
+        bandwidth: { usage: 0, limit: 0 },
+        requests: 0,
+        transformations: 0,
+        plan: "Unknown",
+      },
+    };
+  }
+}
+
+/**
+ * Delete multiple resources from Cloudinary
+ * @param {string[]} publicIds - Array of public IDs to delete
+ * @returns {Promise<Object>} - Deletion result
+ */
+export async function deleteMultipleFromCloudinary(publicIds) {
+  try {
+    const result = await cloudinary.api.delete_resources(publicIds);
+
+    return {
+      success: true,
+      deleted: result.deleted,
+      deletedCounts: result.deleted_counts,
+      partial: result.partial || false,
+    };
+  } catch (error) {
+    console.error("Cloudinary bulk delete error:", error);
+    return {
+      success: false,
+      error: error.message,
+      deleted: {},
+      deletedCounts: {},
+    };
+  }
+}
+
+/**
+ * Find orphaned Cloudinary resources by comparing with database
+ * @param {string} siteName - The site name for folder structure
+ * @returns {Promise<Object>} - Analysis result
+ */
+export async function analyzeCloudinaryResources(siteName) {
+  try {
+    const rootFolder = getRootFolder(siteName);
+
+    // Get all resources from the site's folder
+    const resourcesResult = await listCloudinaryResources(rootFolder);
+
+    if (!resourcesResult.success) {
+      throw new Error(resourcesResult.error);
+    }
+
+    const analysis = {
+      totalResources: resourcesResult.totalCount,
+      byFolder: {},
+      orphanedResources: [],
+      errors: [],
+    };
+
+    // Group resources by folder type
+    const folderTypes = ["logo", "favicon", "hero", "gallery"];
+
+    for (const folderType of folderTypes) {
+      const folderPrefix = `${rootFolder}/${folderType}`;
+      const folderResources = resourcesResult.resources.filter((resource) =>
+        resource.public_id.startsWith(folderPrefix)
+      );
+
+      analysis.byFolder[folderType] = {
+        totalResources: folderResources.length,
+        resources: folderResources,
+        orphaned: [],
+      };
+    }
+
+    return {
+      success: true,
+      analysis,
+      usage: await getCloudinaryUsage(),
+    };
+  } catch (error) {
+    console.error("Cloudinary analysis error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
 export default cloudinary;

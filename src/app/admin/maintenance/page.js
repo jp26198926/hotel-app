@@ -15,6 +15,9 @@ import {
   Settings,
   Play,
   X,
+  Cloud,
+  Server,
+  Globe,
 } from "lucide-react";
 
 export default function MaintenancePage() {
@@ -64,9 +67,9 @@ export default function MaintenancePage() {
       if (data.success) {
         const { deletedFiles, deletedSize } = data.data;
         showSuccess(
-          `Cleanup completed! Deleted ${deletedFiles} files (${formatBytes(
-            deletedSize
-          )})`
+          `Cleanup completed! Deleted ${
+            deletedFiles || data.data.deletedResources
+          } resources (${formatBytes(deletedSize || data.data.deletedSize)})`
         );
         // Refresh analysis
         await analyzeUploads();
@@ -101,7 +104,10 @@ export default function MaintenancePage() {
     return analysisData.cleanupResults.reduce((total, result) => {
       return (
         total +
-        result.files.reduce((fileTotal, file) => fileTotal + file.size, 0)
+        result.resources.reduce(
+          (resourceTotal, resource) => resourceTotal + resource.size,
+          0
+        )
       );
     }, 0);
   };
@@ -118,10 +124,10 @@ export default function MaintenancePage() {
               </div>
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  System Maintenance
+                  Cloud Storage Maintenance
                 </h1>
                 <p className="text-sm text-gray-600">
-                  Manage and clean up orphaned files in upload directories
+                  Manage and clean up orphaned resources in Cloudinary
                 </p>
               </div>
             </div>
@@ -137,11 +143,11 @@ export default function MaintenancePage() {
                   className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`}
                 />
                 <span className="whitespace-nowrap">
-                  {isAnalyzing ? "Analyzing..." : "Analyze Uploads"}
+                  {isAnalyzing ? "Analyzing..." : "Analyze Cloud Storage"}
                 </span>
               </button>
 
-              {analysisData && analysisData.orphanedFiles > 0 && (
+              {analysisData && analysisData.orphanedResources > 0 && (
                 <button
                   onClick={() => handleCleanupClick()}
                   disabled={isCleaningUp}
@@ -149,7 +155,9 @@ export default function MaintenancePage() {
                 >
                   <Trash2 className="w-4 h-4" />
                   <span className="whitespace-nowrap">
-                    {isCleaningUp ? "Cleaning..." : "Clean All Orphaned Files"}
+                    {isCleaningUp
+                      ? "Cleaning..."
+                      : "Clean All Orphaned Resources"}
                   </span>
                 </button>
               )}
@@ -167,12 +175,12 @@ export default function MaintenancePage() {
                   <Database className="w-8 h-8 text-red-600" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-                  Ready to Analyze Upload Directories
+                  Ready to Analyze Cloud Storage
                 </h3>
                 <p className="text-gray-600 mb-6 max-w-md text-sm sm:text-base">
-                  Click &quot;Analyze Uploads&quot; to scan your upload
-                  directories and identify orphaned files that can be safely
-                  removed to free up storage space.
+                  Click &quot;Analyze Cloud Storage&quot; to scan your
+                  Cloudinary resources and identify orphaned files that can be
+                  safely removed to free up storage space.
                 </p>
                 <button
                   onClick={analyzeUploads}
@@ -191,16 +199,80 @@ export default function MaintenancePage() {
           {/* Analysis Results */}
           {analysisData && (
             <div className="space-y-6">
+              {/* Usage Information */}
+              {analysisData.usage && (
+                <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <Cloud className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900">
+                        Cloudinary Usage
+                      </h2>
+                      <p className="text-sm text-gray-600">
+                        Site: {analysisData.siteName} ({analysisData.rootFolder}
+                        )
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <HardDrive className="w-4 h-4 text-gray-600" />
+                        <span className="text-sm font-medium text-gray-700">
+                          Storage Used
+                        </span>
+                      </div>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {formatBytes(analysisData.usage.storage?.usage || 0)}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        of {formatBytes(analysisData.usage.storage?.limit || 0)}{" "}
+                        limit
+                      </p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Globe className="w-4 h-4 text-gray-600" />
+                        <span className="text-sm font-medium text-gray-700">
+                          Bandwidth Used
+                        </span>
+                      </div>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {formatBytes(analysisData.usage.bandwidth?.usage || 0)}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        of{" "}
+                        {formatBytes(analysisData.usage.bandwidth?.limit || 0)}{" "}
+                        limit
+                      </p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Server className="w-4 h-4 text-gray-600" />
+                        <span className="text-sm font-medium text-gray-700">
+                          Plan
+                        </span>
+                      </div>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {analysisData.usage.plan || "Free"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div className="bg-white rounded-lg shadow p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">
-                        Total Files
+                        Total Resources
                       </p>
                       <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                        {analysisData.totalFiles}
+                        {analysisData.totalResources}
                       </p>
                     </div>
                     <div className="bg-red-100 p-3 rounded-lg">
@@ -213,10 +285,10 @@ export default function MaintenancePage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">
-                        Orphaned Files
+                        Orphaned Resources
                       </p>
                       <p className="text-xl sm:text-2xl font-bold text-red-600">
-                        {analysisData.orphanedFiles}
+                        {analysisData.orphanedResources}
                       </p>
                     </div>
                     <div className="bg-red-100 p-3 rounded-lg">
@@ -242,12 +314,12 @@ export default function MaintenancePage() {
                 </div>
               </div>
 
-              {/* Directory Details */}
+              {/* Folder Analysis */}
               <div className="bg-white rounded-lg shadow">
                 <div className="p-4 sm:p-6 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                     <Database className="w-5 h-5" />
-                    Directory Analysis
+                    Folder Analysis
                   </h2>
                 </div>
 
@@ -263,22 +335,23 @@ export default function MaintenancePage() {
                             <Folder className="w-5 h-5 text-gray-500 flex-shrink-0" />
                             <div className="min-w-0 flex-1">
                               <h3 className="font-medium text-gray-900 truncate">
-                                /uploads/{result.directory}
+                                {analysisData.rootFolder}/{result.directory}
                               </h3>
                               <p className="text-sm text-gray-600">
-                                {result.totalFiles} total files,{" "}
-                                {result.orphanedFiles} orphaned
+                                {result.totalResources} total resources,{" "}
+                                {result.orphanedResources} orphaned
                               </p>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-2">
-                            {result.orphanedFiles > 0 ? (
+                            {result.orphanedResources > 0 ? (
                               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                                 <span className="text-sm text-red-600 font-medium whitespace-nowrap">
                                   {formatBytes(
-                                    result.files.reduce(
-                                      (total, file) => total + file.size,
+                                    result.resources.reduce(
+                                      (total, resource) =>
+                                        total + resource.size,
                                       0
                                     )
                                   )}{" "}
@@ -306,25 +379,40 @@ export default function MaintenancePage() {
                           </div>
                         </div>
 
-                        {result.orphanedFiles > 0 && (
+                        {result.orphanedResources > 0 && (
                           <div className="mt-3 p-3 bg-gray-50 rounded">
                             <p className="text-sm font-medium text-gray-700 mb-2">
-                              Orphaned Files:
+                              Orphaned Resources:
                             </p>
                             <div className="max-h-32 overflow-y-auto">
-                              {result.files.map((file, fileIndex) => (
-                                <div
-                                  key={fileIndex}
-                                  className="flex items-center justify-between py-1 text-sm"
-                                >
-                                  <span className="text-gray-600 font-mono break-all mr-2">
-                                    {file.filename}
-                                  </span>
-                                  <span className="text-xs text-gray-500 whitespace-nowrap">
-                                    {formatBytes(file.size)}
-                                  </span>
-                                </div>
-                              ))}
+                              {result.resources.map(
+                                (resource, resourceIndex) => (
+                                  <div
+                                    key={resourceIndex}
+                                    className="flex items-center justify-between py-1 text-sm border-b border-gray-200 last:border-b-0"
+                                  >
+                                    <div className="flex-1 min-w-0 mr-2">
+                                      <p className="text-gray-600 font-mono truncate">
+                                        {resource.filename}
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        {resource.format?.toUpperCase()} •{" "}
+                                        {resource.width}x{resource.height}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                      <span className="text-xs text-gray-500 whitespace-nowrap">
+                                        {formatBytes(resource.size)}
+                                      </span>
+                                      <span className="text-xs text-gray-400">
+                                        {new Date(
+                                          resource.createdAt
+                                        ).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                  </div>
+                                )
+                              )}
                             </div>
                           </div>
                         )}
@@ -383,15 +471,15 @@ export default function MaintenancePage() {
                 <p className="text-gray-700 mb-6 text-sm sm:text-base">
                   Are you sure you want to delete{" "}
                   {selectedDirectory
-                    ? `orphaned files in the "${selectedDirectory}" directory`
-                    : "all orphaned files"}
+                    ? `orphaned resources in the "${selectedDirectory}" folder`
+                    : "all orphaned resources"}
                   ? This will permanently remove{" "}
                   {selectedDirectory
                     ? analysisData.cleanupResults.find(
                         (r) => r.directory === selectedDirectory
-                      )?.orphanedFiles || 0
-                    : analysisData.orphanedFiles}{" "}
-                  files.
+                      )?.orphanedResources || 0
+                    : analysisData.orphanedResources}{" "}
+                  resources from Cloudinary.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -401,7 +489,7 @@ export default function MaintenancePage() {
                     className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
-                    {isCleaningUp ? "Deleting..." : "Delete Files"}
+                    {isCleaningUp ? "Deleting..." : "Delete Resources"}
                   </button>
                   <button
                     onClick={() => {
